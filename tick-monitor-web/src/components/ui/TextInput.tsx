@@ -26,6 +26,7 @@ const TextInput = ({
   className?: string;
   inputClassName?: string;
   onChange?: ChangeEventHandler<HTMLInputElement>;
+  multiline?: boolean;
 }) => {
   return (
     <div

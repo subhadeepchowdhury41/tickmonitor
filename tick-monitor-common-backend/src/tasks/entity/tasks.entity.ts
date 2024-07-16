@@ -24,7 +24,7 @@ export enum Urgency {
 
 @Entity()
 export class Task {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
@@ -88,7 +88,7 @@ export class Task {
     cascade: true,
     onDelete: 'CASCADE',
   })
-  attachments: Attatchment[];
+  attatchments: Attatchment[];
 
   @OneToMany(() => Tasklog, (log) => log.task, {
     cascade: true,

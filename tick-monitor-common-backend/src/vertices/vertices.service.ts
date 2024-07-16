@@ -26,11 +26,12 @@ export class VerticesService {
       const createdVertex = this.verticesRepo.create({
         name: createVertexDto.name,
       });
-      const queriedDomain = await this.domainService.findById(
+      const vertex = await this.verticesRepo.save(createdVertex);
+      await this.domainService.addVerticesToDomain(
         createVertexDto.domainId,
+        vertex.id,
       );
-      createdVertex.domain = queriedDomain;
-      return await this.verticesRepo.save(createdVertex);
+      return vertex;
     } catch (err) {
       console.error(err);
       return err;

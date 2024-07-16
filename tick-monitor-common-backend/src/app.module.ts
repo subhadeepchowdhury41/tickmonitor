@@ -27,7 +27,7 @@ import { Role } from './roles/entity/roles.entity';
       type: 'postgres',
       host: 'localhost',
       username: 'postgres',
-      password: 'postgres',
+      password: 'subha',
       database: 'tickmonitor-db',
       entities: [
         User,
@@ -40,6 +40,7 @@ import { Role } from './roles/entity/roles.entity';
         Role,
       ],
       synchronize: true,
+      dropSchema: true,
     }),
     UsersModule,
     AuthModule,

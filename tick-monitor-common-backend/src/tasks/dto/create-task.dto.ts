@@ -1,18 +1,27 @@
-import { Attatchment } from 'src/attatchments/entities/attatchment.entity';
-import { Task, Urgency } from '../entity/tasks.entity';
-import { Comment } from 'src/comments/entities/comment.entity';
+import { Urgency } from '../entity/tasks.entity';
+import { IsArray, IsDate, IsNotEmpty } from 'class-validator';
 
 export class CreateTaskDto {
+  @IsNotEmpty()
   title: string;
+
+  @IsNotEmpty()
   description: string;
-  dueDate: Date;
-  urgency: Urgency;
+
+  urgency?: Urgency;
+
+  @IsNotEmpty()
   assignedBy: string;
+
+  @IsArray()
   assignedUsers: string[];
-  attatchments: (string | Attatchment)[];
-  subTasks: (string | Task)[];
-  dependencies: (string | Task)[];
-  comments: (string | Comment)[];
+
+  @IsArray()
+  vertices: string[];
+
+  @IsDate()
+  dueDate: Date;
+
   parentTaskId?: string;
   dependencyOf?: string;
 }

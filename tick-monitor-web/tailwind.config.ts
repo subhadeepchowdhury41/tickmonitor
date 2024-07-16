@@ -31,11 +31,11 @@ const config: Config = {
         },
         loginLoaderAppear: {
           "0%": {
-            opacity: '0',
+            opacity: "0",
             transform: "scale(0.3)",
           },
           "100%": {
-            opacity: '1',
+            opacity: "1",
             transform: "scale(1)",
           },
         },
@@ -66,6 +66,7 @@ const config: Config = {
         "login-loader-appear": "loginLoaderAppear 1s ease-in forwards",
         "login-form-slide": "loginFormSlide 0.4s ease-in forwards",
         "login-width-grow": "loginWidthGrow 0.4s ease-in forwards",
+        "drawer-arrow-grow": "loginLoaderAppear 0.2s ease-in forwards",
       },
     },
   },

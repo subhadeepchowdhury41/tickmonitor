@@ -1,12 +1,15 @@
 import Appbar from "@/components/appbar/appbar";
 import Drawer from "@/components/drawer/drawer";
 
-const DashboardTemplate = () => {
+const DashboardTemplate = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <div className="flex h-screen">
         <Drawer />
-        <Appbar />
+        <div className="flex-grow">
+          <Appbar />
+          {children}
+        </div>
       </div>
     </>
   );

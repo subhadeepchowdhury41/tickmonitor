@@ -1,8 +1,23 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
-import { AccessTokenGuard } from 'src/common/guards/access-token.guard';
-import { RefreshTokenGuard } from 'src/common/guards/refresh-token.guard';
+import { Controller, Delete, Get, Param } from '@nestjs/common';
+
+import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
- 
+  constructor(private readonly userService: UsersService) {}
+
+  @Get()
+  findAll() {
+    return this.userService.findAll();
+  }
+
+  @Get(':id')
+  findById(@Param('id') id: string) {
+    return this.userService.findById(id);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.userService.delete(id);
+  }
 }

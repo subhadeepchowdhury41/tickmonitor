@@ -60,6 +60,6 @@ export class User {
   @OneToMany(() => Role, (roles) => roles.user)
   roles: Role[];
 
-  @OneToMany(() => Domain, (domains) => domains.user)
+  @ManyToMany(() => Domain, (domains) => domains.users)
   domains: Domain[];
 }

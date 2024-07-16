@@ -12,4 +12,6 @@ export class CreateDomainDto {
 
   @IsJSON()
   details?: object;
+
+  level?: number;
 }

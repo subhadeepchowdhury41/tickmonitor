@@ -24,6 +24,9 @@ export class UsersService {
     private readonly domainService: DomainService,
   ) {}
 
+  findAll = async () => {
+    return await this.usersRepository.find({ relations: ['domains'] });
+  };
   findById = async (id: string): Promise<User | undefined> => {
     return this.usersRepository.findOne({ where: { id: id } });
   };
@@ -49,17 +52,29 @@ export class UsersService {
     return this.usersRepository.update(id, newUser);
   };
 
+  delete = async (id: string) => {
+    const user = await this.usersRepository.findOne({ where: { id: id } });
+    if (!user) {
+      throw new NotFoundException('No User Found');
+    }
+    await this.usersRepository.delete(id);
+    return { message: 'User Deleted Successfully!' };
+  };
+
   addDomainToUser = async (userId: string, domainId: string) => {
     const queriedUser = await this.usersRepository.findOne({
       where: { id: userId },
+      relations: ['domains'],
     });
     if (!queriedUser) {
       throw new NotFoundException('User Not Found');
     }
     const queriedDomain = await this.domainService.findById(domainId);
     if (!queriedDomain) {
-      throw new NotFoundException('Domain not Fund');
+      throw new NotFoundException('Domain not Found');
     }
+    queriedUser.domains.push(queriedDomain);
+    return this.usersRepository.save(queriedUser);
   };
 
   addRoleToUser = async (userId: string, roleId: string) => {
@@ -75,5 +90,16 @@ export class UsersService {
     }
     queriedUser.roles.push(queriedRole);
     return await this.usersRepository.save(queriedUser);
+  };
+
+  checkValidUser = async (id: string, relations?: string[]) => {
+    const user = await this.usersRepository.findOne({
+      where: { id: id },
+      relations,
+    });
+    if (!user) {
+      throw new NotFoundException('No User Found With ID: ' + id);
+    }
+    return user;
   };
 }

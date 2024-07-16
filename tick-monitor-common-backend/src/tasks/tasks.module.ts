@@ -6,6 +6,7 @@ import { Task } from './entity/tasks.entity';
 import { UsersModule } from 'src/users/users.module';
 import { CommentsModule } from 'src/comments/comments.module';
 import { AttatchmentsModule } from 'src/attatchments/attatchments.module';
+import { VerticesModule } from 'src/vertices/vertices.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { AttatchmentsModule } from 'src/attatchments/attatchments.module';
     forwardRef(() => UsersModule),
     forwardRef(() => CommentsModule),
     forwardRef(() => AttatchmentsModule),
+    forwardRef(() => VerticesModule),
   ],
   providers: [TasksService],
   controllers: [TasksController],

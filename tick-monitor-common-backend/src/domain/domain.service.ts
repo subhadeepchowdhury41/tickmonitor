@@ -22,7 +22,7 @@ export class DomainService {
   create = async (createDomainDto: CreateDomainDto) => {
     try {
       const domain = this.domainRepository.create(createDomainDto);
-      return await this.domainRepository.save(domain);
+      return this.domainRepository.save(domain);
     } catch (err) {
       console.error(err);
       return err;
@@ -31,15 +31,23 @@ export class DomainService {
   addVerticesToDomain = async (domainId: string, vertId: string) => {
     try {
       const queriedVertex = await this.verticesService.findById(vertId);
-      const queriedDomain = await this.findById(domainId);
+      const queriedDomain = await this.domainRepository.findOne({
+        where: { id: domainId },
+        relations: ['vertices'],
+      });
       queriedDomain.vertices.push(queriedVertex);
       return await this.domainRepository.save(queriedDomain);
     } catch (err) {
       console.error(err);
     }
   };
-  findById = async (id: string) => {
-    return await this.domainRepository.findOne({ where: { id: id } });
+  findById = async (id: string, relations?: string[]) => {
+    return await this.domainRepository.findOne({
+      where: { id: id },
+      relations,
+    });
   };
-  findAll = async () => {};
+  findAll = async () => {
+    return await this.domainRepository.find();
+  };
 }

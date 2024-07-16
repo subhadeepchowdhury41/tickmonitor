@@ -6,6 +6,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UsersService } from 'src/users/users.service';
 import { CommentsService } from 'src/comments/comments.service';
 import { AttatchmentsService } from 'src/attatchments/attatchments.service';
+import { VerticesService } from 'src/vertices/vertices.service';
 
 @Injectable()
 export class TasksService {
@@ -18,6 +19,8 @@ export class TasksService {
     private readonly commentService: CommentsService,
     @Inject(forwardRef(() => AttatchmentsService))
     private readonly attatchmentService: AttatchmentsService,
+    @Inject(forwardRef(() => VerticesService))
+    private readonly vertexService: VerticesService,
   ) {}
 
   findById = async (id: string): Promise<Task> => {
@@ -33,6 +36,7 @@ export class TasksService {
         'comments',
         'attatchments',
         'assignedUsers',
+        'domains',
         'logs',
       ],
     });
@@ -55,73 +59,38 @@ export class TasksService {
   };
 
   create = async (createTaskDto: CreateTaskDto) => {
-    const {
-      subTasks,
-      dependencies,
-      assignedUsers,
-      comments,
-      attatchments,
-      dependencyOf,
-      parentTaskId,
-    } = createTaskDto;
-    const task = new Task();
-    await this.tasksRepository.save(task);
-    subTasks?.forEach(async (subTask) => {
-      if (typeof subTask === 'string') {
-        const fetchedSubTask = await this.tasksRepository.findOne({
-          where: { id: subTask },
-        });
-        task.subTasks.push(fetchedSubTask);
-      } else {
-        const createdSubTask = this.tasksRepository.create(subTask);
-        await this.tasksRepository.save(createdSubTask);
-        task.subTasks.push(createdSubTask);
-      }
-    });
-    dependencies?.forEach(async (depTask) => {
-      if (typeof depTask === 'string') {
-        const fetchedSubTask = await this.tasksRepository.findOne({
-          where: { id: depTask },
-        });
-        task.dependencies.push(fetchedSubTask);
-      } else {
-        const createdDepTask = this.tasksRepository.create(depTask);
-        await this.tasksRepository.save(createdDepTask);
-        task.dependencies.push(createdDepTask);
-      }
+    const { assignedUsers, dependencyOf, vertices, parentTaskId } =
+      createTaskDto;
+    const initTask = this.tasksRepository.create({
+      title: createTaskDto.title,
+      description: createTaskDto.description,
+      dueDate: createTaskDto.dueDate,
+      subTasks: [],
+      assignedUsers: [],
+      vertices: [],
+      urgency: createTaskDto.urgency,
     });
     if (parentTaskId) {
       const parentTask = await this.findById(parentTaskId);
-      task.parentTask = parentTask;
-      task.level = parentTask.level + 1;
+      initTask.parentTask = parentTask;
+      initTask.level = parentTask.level + 1;
     }
     if (dependencyOf) {
       const dependencyOfTask = await this.findById(dependencyOf);
-      task.dependencyOf = dependencyOfTask;
+      initTask.dependencyOf = dependencyOfTask;
     }
-    const assignerUser = await this.usersService.findById(
+    const assignerUser = await this.usersService.checkValidUser(
       createTaskDto.assignedBy,
     );
-    task.assignedBy = assignerUser;
-    assignedUsers.forEach(async (user) => {
-      const fetchedUser = await this.usersService.findById(user);
-      task.assignedUsers.push(fetchedUser);
+    initTask.assignedBy = assignerUser;
+    assignedUsers?.forEach(async (user) => {
+      const fetchedUser = await this.usersService.checkValidUser(user);
+      initTask.assignedUsers.push(fetchedUser);
     });
-    attatchments?.forEach(async (attatchment) => {
-      if (typeof attatchment === 'string') {
-        const mutatedAttatchments =
-          await this.attatchmentService.findById(attatchment);
-        task.attachments.push(mutatedAttatchments);
-      }
+    vertices?.forEach(async (vertex) => {
+      const fetchedVertex = await this.vertexService.findById(vertex);
+      initTask.vertices.push(fetchedVertex);
     });
-    comments?.forEach(async (comment) => {
-      if (typeof comment === 'string') {
-        const mutatedComment = await this.commentService.findById(comment);
-        task.comments.push(mutatedComment);
-      }
-    });
-    task.urgency = createTaskDto.urgency;
-    task.dueDate = createTaskDto.dueDate;
-    await this.tasksRepository.update(task.id, task);
+    return await this.tasksRepository.save(initTask);
   };
 }

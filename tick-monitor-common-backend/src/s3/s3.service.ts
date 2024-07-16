@@ -7,13 +7,20 @@ import * as MulterS3 from 'multer-s3';
 export class S3Service {
   private s3: S3Client;
   constructor(private readonly configService: ConfigService) {
+    const useLocal = this.configService.get<boolean>('USE_LOCAL');
     this.s3 = new S3Client({
       credentials: {
-        accessKeyId: this.configService.get<string>('S3_ACCESS_KEY_ID'),
-        secretAccessKey: this.configService.get<string>('S3_SECRET_ACCESS_KEY'),
+        accessKeyId: !useLocal
+          ? this.configService.get<string>('S3_ACCESS_KEY_ID')
+          : 'test',
+        secretAccessKey: !useLocal
+          ? this.configService.get<string>('S3_SECRET_ACCESS_KEY')
+          : 'test',
       },
+      endpoint: useLocal ? 'http://localhost:4566' : undefined,
       region: this.configService.get<string>('AWS_REGION'),
     });
+    7;
   }
 
   getMulterS3 = () =>

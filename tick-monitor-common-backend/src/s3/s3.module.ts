@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { S3Service } from './s3.service';
-import multer from 'multer';
+import * as multer from 'multer';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({

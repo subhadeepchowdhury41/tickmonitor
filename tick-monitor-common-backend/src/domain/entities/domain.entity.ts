@@ -4,6 +4,8 @@ import { Vertex } from 'src/vertices/entities/vertex.entity';
 import {
   Column,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -17,7 +19,7 @@ export class Domain {
   @Column()
   domainUrl: string;
 
-  @Column('json')
+  @Column('json', { default: {} })
   details: object;
 
   @OneToMany(() => Domain, (domains) => domains.parentDomain)
@@ -38,8 +40,19 @@ export class Domain {
   @OneToMany(() => Role, (roles) => roles.domain)
   roles: Role[];
 
-  @ManyToOne(() => User, (user) => user.domains)
-  user: User;
+  @ManyToMany(() => User, (user) => user.domains)
+  @JoinTable({
+    name: 'domain_users',
+    joinColumn: {
+      referencedColumnName: 'id',
+      name: 'domainId',
+    },
+    inverseJoinColumn: {
+      referencedColumnName: 'id',
+      name: 'userId',
+    },
+  })
+  users: User[];
 
   @OneToMany(() => Vertex, (vertex) => vertex.domain)
   vertices: Vertex[];

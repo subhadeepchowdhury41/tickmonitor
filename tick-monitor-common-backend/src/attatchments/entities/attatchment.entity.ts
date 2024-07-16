@@ -20,7 +20,7 @@ export class Attatchment {
   @ManyToOne(() => User, (user) => user.attatchments)
   user: User;
 
-  @ManyToOne(() => Task, (task) => task.attachments)
+  @ManyToOne(() => Task, (task) => task.attatchments)
   task: Task;
 
   @ManyToOne(() => Comment, (comment) => comment.attatchments)
