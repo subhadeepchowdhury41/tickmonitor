@@ -33,7 +33,7 @@ const MultilineInput = ({
     >
       <label className="text-xs px-2">{label}</label>
       <textarea
-        className={`outline-none px-2 py-1 rounded-lg text-sm ${inputClassName}`}
+        className={`outline-none px-2 py-1 rounded-lg text-sm h-[100px] ${inputClassName}`}
         {...inputProps}
         style={{ fontSize: 13, ...style }}
         value={value}

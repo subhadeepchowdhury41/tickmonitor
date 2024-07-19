@@ -14,6 +14,7 @@ const TextInput = ({
   className,
   inputClassName,
   onChange,
+  icon,
 }: {
   value?: string | number;
   label: string;
@@ -26,21 +27,24 @@ const TextInput = ({
   className?: string;
   inputClassName?: string;
   onChange?: ChangeEventHandler<HTMLInputElement>;
-  multiline?: boolean;
+  icon?: React.ReactNode;
 }) => {
   return (
     <div
       className={`flex flex-col bg-white rounded-md w-full py-1 border border-slate-400 ${className}`}
     >
       <label className="text-xs px-2">{label}</label>
-      <input
-        className={`outline-none px-2 py-1 rounded-lg text-sm ${inputClassName}`}
-        {...inputProps}
-        style={{ fontSize: 13, ...style }}
-        value={value}
-        placeholder={hint}
-        onChange={onChange}
-      />
+      <div className="flex">
+        <input
+          className={`outline-none px-2 py-1 rounded-lg text-sm ${inputClassName}`}
+          {...inputProps}
+          style={{ fontSize: 13, ...style }}
+          value={value}
+          placeholder={hint}
+          onChange={onChange}
+        />
+        {icon}
+      </div>
     </div>
   );
 };

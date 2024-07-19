@@ -34,6 +34,9 @@ export class Task {
   description: string;
 
   @Column()
+  startDate: Date;
+
+  @Column()
   dueDate: Date;
 
   @Column({ default: false })

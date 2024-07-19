@@ -22,6 +22,9 @@ export class CreateTaskDto {
   @IsDate()
   dueDate: Date;
 
+  @IsDate()
+  startDate: Date;
+
   parentTaskId?: string;
   dependencyOf?: string;
 }

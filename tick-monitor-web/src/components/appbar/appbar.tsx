@@ -4,7 +4,7 @@ import { IconButton } from "@mui/material";
 const Appbar = () => {
   return (
     <>
-      <div className="flex-grow h-20 border-slate-200 flex items-center justify-between px-4 bg-[#0f4658fb]">
+      <div className="flex-grow h-20 border-slate-200 flex items-center justify-between px-4 bg-[#0f4658fb] shadow-lg">
         <div></div>
         <div className="flex items-center gap-8">
           <IconButton sx={{color: 'white'}}>

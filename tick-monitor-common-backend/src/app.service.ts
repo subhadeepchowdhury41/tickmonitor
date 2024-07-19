@@ -125,6 +125,7 @@ export class AppService {
     return await this.taskService.create({
       title: title,
       description: description,
+      startDate: new Date(),
       dueDate: dueDate || new Date(),
       assignedBy: assignedBy,
       assignedUsers: assignedUsers,

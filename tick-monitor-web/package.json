@@ -13,6 +13,8 @@
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.16.1",
     "@mui/material": "^5.16.1",
+    "@types/slate": "^0.47.15",
+    "@types/slate-react": "^0.50.1",
     "axios": "^1.7.2",
     "jsonwebtoken": "^9.0.2",
     "next": "14.2.4",
@@ -20,7 +22,9 @@
     "react": "^18",
     "react-dom": "^18",
     "react-loader-spinner": "^6.1.6",
-    "react-type-animation": "^3.2.0"
+    "react-type-animation": "^3.2.0",
+    "slate": "^0.103.0",
+    "slate-react": "^0.107.1"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.6",

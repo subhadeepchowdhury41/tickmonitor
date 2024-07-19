@@ -65,6 +65,7 @@ export class TasksService {
       title: createTaskDto.title,
       description: createTaskDto.description,
       dueDate: createTaskDto.dueDate,
+      startDate: createTaskDto.startDate,
       subTasks: [],
       assignedUsers: [],
       vertices: [],
