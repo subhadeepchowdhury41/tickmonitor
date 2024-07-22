@@ -1,46 +1,39 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { parseCookies } from "nookies";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 interface AuthContextType {
   user: any;
-  accessToken: string | JwtPayload | null;
-  signin: (email: string, password: string) => Promise<void>;
+  signin: (email: string, password: string) => Promise<AxiosResponse<any, any>>;
   signup: (email: string, password: string) => Promise<void>;
+  fetchMe: () => Promise<void>;
   updateRefreshToken: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [accessToken, setAccessToken] = useState<string | null | JwtPayload>(
-    null
-  );
+  const [accessToken, setAccessToken] = useState<any>(null);
   const [user, setUser] = useState();
-
-  const fetchUser = () => {
-    const cookies = parseCookies();
-    console.log(cookies);
-    const accessToken = cookies.accessToken;
-    if (accessToken) {
-      setAccessToken(jwt.decode(accessToken));
-    }
-  };
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
-  const signin = async (email: string, password: string) => {
+  const signin = async (
+    email: string,
+    password: string
+  ): Promise<AxiosResponse<any, any>> => {
     try {
-      const response = await axios.post("/api/auth/sigin", { email, password });
-      setUser(response.data);
-      setAccessToken(response.data);
+      const response = await axios.post("/api/auth/signin", {
+        email,
+        password,
+      });
       console.log(response.data);
+      setAccessToken(response.data);
+      return response;
     } catch (err) {
       console.error(err);
+      throw err;
     }
   };
   const signup = async (email: string, password: string) => {
@@ -49,13 +42,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         email,
         password,
       });
-      setUser(resposne.data);
       console.log(resposne.data);
     } catch (err) {
       console.error(err);
     }
   };
-
+  const fetchMe = async () => {
+    await axios
+      .get("/api/auth/me", {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setUser(res.data.response.user);
+        console.log("SET_AUTH_USER: ", user);
+      })
+      .catch((err) => console.error(err));
+  };
   const updateRefreshToken = async () => {
     try {
       const response = await axios.post("/api/auth/refresh");
@@ -64,14 +66,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.error(err);
     }
   };
+  useEffect(() => {
+    fetchMe();
+  }, [accessToken]);
   return (
     <AuthContext.Provider
       value={{
         signin,
         signup,
         user,
+        fetchMe,
         updateRefreshToken,
-        accessToken,
       }}
     >
       {children}

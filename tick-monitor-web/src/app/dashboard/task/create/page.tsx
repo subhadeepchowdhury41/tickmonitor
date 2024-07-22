@@ -1,75 +1,92 @@
 "use client";
 
 import Editor from "@/components/editor/editor";
-import AddPeoplePopup from "@/components/popups/AddPeople";
 import AutofillInput from "@/components/ui/AutofillInput";
+import Button from "@/components/ui/Button";
 import DateInput from "@/components/ui/DateInput";
 import { LineBreak } from "@/components/ui/LineBeak";
 import MultilineInput from "@/components/ui/MultilineInput";
 import TextInput from "@/components/ui/TextInput";
+import TimeInput from "@/components/ui/TimeInput";
+import { useAuth } from "@/contexts/AuthContext";
+import { useDomain } from "@/contexts/DomainContext";
+import { Comment } from "@/lib/types/comment-app.type";
+import { getDateTime } from "@/lib/utils/datetimeUtils";
 import {
+  Add,
   Assignment,
+  Attachment,
+  Business,
   Cancel,
-  Comment,
+  Comment as CommentIcon,
   DateRange,
   Delete,
+  InfoOutlined,
   People,
+  Send,
+  Timeline,
 } from "@mui/icons-material";
 import {
   Avatar,
   AvatarGroup,
-  Button,
   Dialog,
   DialogTitle,
   IconButton,
 } from "@mui/material";
+import axios from "axios";
 import { useState } from "react";
 
-const people = [
-  {
-    domain: "OAB",
-    name: "Subhadeep Chowdhury",
-    id: "1",
-  },
-  {
-    domain: "AntiMatter",
-    name: "Avishek Neogi",
-    id: "2",
-  },
-  {
-    domain: "ABMCL",
-    name: "Sumanth Kongani",
-    id: "3",
-  },
-  {
-    domain: "Grasim",
-    name: "Mrityunjai Sinha",
-    id: "4",
-  },
-  {
-    domain: "Grasim",
-    name: "Sahil Khakar",
-    id: "5",
-  },
-  {
-    domain: "Grasim",
-    name: "Tanishka Bhat",
-    id: "6",
-  },
-  {
-    domain: "Grasim",
-    name: "Nveen Edala",
-    id: "7",
-  },
-];
+type RecurralIntervalType = "daily" | "weekly" | "monthly" | "annual";
 
 const CreateTask = () => {
-  const [showAddPeople, setShowAddPeople] = useState(false);
-  const handleClose = () => setShowAddPeople(false);
-  const [title, setTitle] = useState("");
-  const [desc, setDesc] = useState("");
-  const [files, setFiles] = useState([]);
-  const [addedPeople, setAddedPeople] = useState();
+  const auth = useAuth();
+  const domain = useDomain();
+  const [isRecurral, setIsRecurral] = useState(false);
+  const [title, setTitle] = useState("This is a new task");
+  const [desc, setDesc] = useState(
+    "This task is created to test if the task creation form is working or not."
+  );
+  const [files, setFiles] = useState<File[]>([]);
+  const [to, setTo] = useState<string[]>([]);
+  const [cc, setCc] = useState<string[]>([]);
+  const [startTime, setStartTime] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endTime, setEndTime] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+  const [selectedVerticals, setSelectedVerticals] = useState<string[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [recurralInterval, setRecurralInterval] =
+    useState<RecurralIntervalType>("daily");
+  const submitTask = async () => {
+    await axios.post("/api/tasks/", {
+      title: title,
+      description: desc,
+      assignedBy: auth?.user.id,
+      assignedUsers: [
+        ...to.map((t) => ({
+          id: t,
+          role: "to",
+        })),
+        ...cc.map((c) => ({
+          id: c,
+          role: "cc",
+        })),
+      ],
+      vertices: selectedVerticals,
+      interval: isRecurral ? recurralInterval : "none",
+      startDate: getDateTime(startDate, startTime),
+      dueDate: getDateTime(endDate, endTime),
+    });
+  };
+  const formatSizeInBytes = (size: number) => {
+    const sizes = ["Bytes", "KB", "MB"];
+    let i = 0;
+    while (size > 1024 && i < 3) {
+      size = size / 1024;
+      i++;
+    }
+    return `${size.toFixed(2)}${sizes[i]}`;
+  };
   return (
     <>
       <div
@@ -78,167 +95,425 @@ const CreateTask = () => {
         }}
         className="flex-col flex"
       >
-        <div className="px-4 flex items-center justify-between text-2xl font-bold bg-[#FC6736]">
-          <div className="flex items-center gap-2 py-2 mt-4 text-white">
+        <div className="px-4 flex items-center justify-between text-2xl font-bold py-2 bg-blue-600">
+          <div className="flex items-center gap-2 text-white">
             <Assignment sx={{ color: "white" }} />
             Assign Task
           </div>
-          <div className="flex gap-2 font-normal">
-            <AvatarGroup max={4}>
-              <Avatar>N</Avatar>
-              <Avatar>I</Avatar>
-              <Avatar>G</Avatar>
-              <Avatar>G</Avatar>
-              <Avatar>E</Avatar>
-              <Avatar>R</Avatar>
-            </AvatarGroup>
-            <Button
-              onClick={() => setShowAddPeople(true)}
-              size="small"
-              variant="contained"
-              className="text-xs rounded-full px-4 text-white"
-            >
-              + Add People
-            </Button>
-          </div>
         </div>
-        {/* <LineBreak className="" /> */}
-        <div className="flex flex-grow">
-          <div className="flex-grow mt-4">
-            <div className="mx-4">
-              <TextInput
-                label="Title"
-                hint="Enter Title"
-                style={{
-                  fontSize: 14,
-                }}
-                className="text-2xl"
-              />
-            </div>
-            <div className="mx-4 mt-2">
-              <MultilineInput
-                label="Description"
-                hint="Describe your Task"
-                inputClassName=""
-                style={{
-                  fontSize: 14,
-                  paddingTop: "0.3em",
-                  resize: "none",
-                }}
-                className=""
-              />
-            </div>
-            <div className="mx-4 mt-2 flex gap-2">
-              <DateInput
-                label="Start                                                                                                            Date"
-                hint="Select Start Date"
-                className=" text-2xl"
-              />
-              <DateInput
-                label="End Date"
-                hint="Select End Date"
-                className="text-2xl"
-              />
-            </div>
-            <div className="mx-4 mt-2">
-              <AutofillInput
-                label="To"
-                hint="Mention Assignee to this Task"
-                renderSelected={(sel, removeItem, idx) => (
-                  <div
-                    key={idx}
-                    className="h-7 flex items-center justify-between text-xs ml-2 rounded-full bg-[#13495b] text-white min-w-[120px] text-ellipsis text-nowrap"
-                  >
-                    <div className="flex items-center">
-                      <Avatar className="mx-1 w-5 h-5 text-xs">
-                        {sel.name[0]}
-                      </Avatar>
-                      <div className="mr-2">{sel.name}</div>
+        <div className="flex">
+          <div className="flex-grow">
+            <div
+              style={{
+                height: "calc(100vh - 8rem)",
+              }}
+              className="overflow-y-scroll pt-4"
+            >
+              {/* :Details */}
+              <div className="flex flex-col mx-4 mt-4">
+                <div className="flex font-bold items-center gap-1">
+                  <InfoOutlined fontSize="small" /> Details
+                </div>
+                <LineBreak className="mt-1" />
+              </div>
+              <div className="mx-4 mt-4">
+                <TextInput
+                  label="Title"
+                  hint="Enter Title"
+                  style={{
+                    fontSize: 14,
+                  }}
+                  className="text-2xl"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
+              <div className="mx-4 mt-2">
+                <MultilineInput
+                  label="Description"
+                  hint="Describe your Task"
+                  inputClassName=""
+                  style={{
+                    fontSize: 14,
+                    paddingTop: "0.3em",
+                    resize: "none",
+                  }}
+                  value={desc}
+                  onChange={(e) => setDesc(e.target.value)}
+                  className=""
+                />
+              </div>
+              <div className="flex flex-col mx-4 mt-4">
+                <div className="flex font-bold items-center gap-1">
+                  <People fontSize="small" /> People
+                </div>
+                <LineBreak className="mt-1" />
+              </div>
+              <div className="mx-4 mt-4">
+                <AutofillInput
+                  label="To"
+                  hint="Mention Assignee to this Task"
+                  renderSelected={(sel, removeItem, idx) => (
+                    <div
+                      key={idx}
+                      className="h-7 flex items-center justify-between text-xs ml-2 rounded-full bg-[#13495b] text-white min-w-[120px] text-ellipsis text-nowrap"
+                    >
+                      <div className="flex items-center">
+                        <Avatar className="mx-1 w-5 h-5 text-xs">
+                          {sel.name[0]}
+                        </Avatar>
+                        <div className="mr-2">{sel.name}</div>
+                      </div>
+                      <Cancel
+                        className="w-6 h-6 cursor-pointer mr-[0.125em]"
+                        onClick={() => removeItem(sel.id)}
+                      />
                     </div>
-                    <Cancel
-                      className="w-6 h-6 cursor-pointer mr-[0.125em]"
-                      onClick={() => removeItem(sel.id)}
+                  )}
+                  renderAutofillItem={(
+                    item,
+                    highlighted,
+                    selectItem,
+                    index
+                  ) => (
+                    <div
+                      onClick={() => selectItem(index)}
+                      className={`flex gap-2 p-2 hover:bg-slate-400 cursor-pointer ${
+                        highlighted
+                          ? "bg-slate-400 border-l-2 border-slate-800"
+                          : "bg-white"
+                      }`}
+                    >
+                      <Avatar>{item.name[0]}</Avatar>
+                      <div className={`text-sm font-bold`}>
+                        {item.name}
+                        <div className="text-xs font-normal">{item.domain}</div>
+                      </div>
+                    </div>
+                  )}
+                  options={
+                    domain?.users
+                      .filter((u) => !to.includes(u.id))
+                      .map((u) => ({ ...u, domain: "OAB" })) ?? []
+                  }
+                  searchMapper={(p: any) => p.name}
+                  onChange={(curr, full) => setTo(full.map((t) => t.id))}
+                />
+              </div>
+              <div className="mx-4 mt-2">
+                <AutofillInput
+                  label="Cc"
+                  hint="Mention Ccs to this Task"
+                  renderSelected={(sel, removeItem, idx) => (
+                    <div
+                      key={idx}
+                      className="h-7 flex items-center justify-between text-xs ml-2 rounded-full bg-[#13495b] text-white min-w-[120px] text-ellipsis text-nowrap"
+                    >
+                      <div className="flex items-center">
+                        <Avatar className="mx-1 w-5 h-5 text-xs">
+                          {sel.name[0]}
+                        </Avatar>
+                        <div className="mr-2">{sel.name}</div>
+                      </div>
+                      <Cancel
+                        className="w-6 h-6 cursor-pointer mr-[0.125em]"
+                        onClick={() => removeItem(sel.id)}
+                      />
+                    </div>
+                  )}
+                  renderAutofillItem={(
+                    item,
+                    highlighted,
+                    selectItem,
+                    index
+                  ) => (
+                    <div
+                      onClick={() => selectItem(index)}
+                      className={`flex gap-2 p-2 hover:bg-slate-400 cursor-pointer ${
+                        highlighted
+                          ? "bg-slate-400 border-l-2 border-slate-800"
+                          : "bg-white"
+                      }`}
+                    >
+                      <Avatar>{item.name[0]}</Avatar>
+                      <div className={`text-sm font-bold`}>
+                        {item.name}
+                        <div className="text-xs font-normal">{item.domain}</div>
+                      </div>
+                    </div>
+                  )}
+                  options={
+                    domain?.users
+                      .filter((u) => !cc.includes(u.id))
+                      .map((u) => ({ ...u, domain: "OAB" })) ?? []
+                  }
+                  searchMapper={(p) => p.name}
+                  onChange={(curr, full) => {
+                    console.log(curr, full);
+                    setCc(full.map((c) => c.id));
+                  }}
+                />
+              </div>
+
+              {/* :Business */}
+              <div className="flex flex-col mx-4 mt-4">
+                <div className="flex font-bold items-center gap-1">
+                  <Business fontSize="small" /> Business
+                </div>
+                <LineBreak className="mt-1" />
+              </div>
+              <div className="mx-4 mt-2">
+                <AutofillInput
+                  label="Business"
+                  hint="Mention Businesses involved this Task"
+                  renderSelected={(sel, removeItem, idx) => (
+                    <div
+                      key={idx}
+                      className="h-7 flex items-center justify-between text-xs ml-2 rounded-full bg-[#13495b] text-white min-w-[120px] text-ellipsis text-nowrap"
+                    >
+                      <div className="flex items-center">
+                        <Avatar className="mx-1 w-5 h-5 text-xs">
+                          {sel.name[0]}
+                        </Avatar>
+                        <div className="mr-2">{sel.name}</div>
+                      </div>
+                      <Cancel
+                        className="w-6 h-6 cursor-pointer mr-[0.125em]"
+                        onClick={() => removeItem(sel.id)}
+                      />
+                    </div>
+                  )}
+                  renderAutofillItem={(
+                    item,
+                    highlighted,
+                    selectItem,
+                    index
+                  ) => (
+                    <div
+                      onClick={() => selectItem(index)}
+                      className={`flex gap-2 p-2 hover:bg-slate-400 cursor-pointer ${
+                        highlighted
+                          ? "bg-slate-400 border-l-2 border-slate-800"
+                          : "bg-white"
+                      }`}
+                    >
+                      <Avatar>{item.name[0]}</Avatar>
+                      <div className={`text-sm font-bold`}>
+                        {item.name}
+                        <div className="text-xs font-normal">{item.name}</div>
+                      </div>
+                    </div>
+                  )}
+                  options={domain?.verticals ?? []}
+                  searchMapper={(p) => p.name}
+                  onChange={(curr, full) =>
+                    setSelectedVerticals(full.map((v) => v.id))
+                  }
+                />
+              </div>
+              {/* :Timeline */}
+              <div className="flex flex-col mx-4 mt-4">
+                <div className="flex font-bold items-center gap-1">
+                  <DateRange fontSize="small" /> Timeline
+                </div>
+                <LineBreak className="mt-1" />
+              </div>
+              <div className="flex mx-4 mt-2 items-center justify-between gap-2">
+                <div className="flex flex-col w-full">
+                  <div className="text-xs mb-1 mt-2 mx-1">Task Type</div>
+                  <div className="bg-slate-200 h-10 rounded-md flex items-center w-full text-sm">
+                    <div
+                      className={`h-8 ${
+                        !isRecurral
+                          ? "bg-slate-800 shadow-lg text-white"
+                          : "text-slate-800"
+                      } w-[100%] flex items-center justify-center rounded-md ml-1 cursor-pointer rounded-r-none`}
+                      onClick={() => setIsRecurral(false)}
+                    >
+                      Normal
+                    </div>
+                    <div
+                      className={`h-8 w-[100%] ${
+                        isRecurral
+                          ? "bg-slate-800 shadow-lg text-white"
+                          : "text-slate-800"
+                      } flex items-center justify-center rounded-md mr-1 cursor-pointer rounded-l-none`}
+                      onClick={() => setIsRecurral(true)}
+                    >
+                      Recurral
+                    </div>
+                  </div>
+                </div>
+                {isRecurral ? (
+                  <div className="flex flex-col">
+                    <div className="text-xs mx-1 mb-1 mt-2">
+                      Reccural Interval
+                    </div>
+                    <div className="bg-slate-200 h-10 rounded-md flex items-center w-96 text-sm">
+                      <div
+                        className={`h-8 ${
+                          recurralInterval === "daily"
+                            ? "bg-slate-800 shadow-lg text-white"
+                            : "text-slate-800"
+                        } w-[100%] flex items-center justify-center rounded-md ml-1 cursor-pointer rounded-r-none`}
+                        onClick={() => setRecurralInterval("daily")}
+                      >
+                        Daily
+                      </div>
+                      <div
+                        className={`h-8 w-[100%] ${
+                          recurralInterval === "weekly"
+                            ? "bg-slate-800 shadow-lg text-white"
+                            : "text-slate-800"
+                        } flex items-center justify-center cursor-pointer`}
+                        onClick={() => setRecurralInterval("weekly")}
+                      >
+                        Weekly
+                      </div>
+                      <div
+                        className={`h-8 w-[100%] ${
+                          recurralInterval === "monthly"
+                            ? "bg-slate-800 shadow-lg text-white"
+                            : "text-slate-800"
+                        } flex items-center justify-center cursor-pointer rounded-l-none`}
+                        onClick={() => setRecurralInterval("monthly")}
+                      >
+                        Monthly
+                      </div>
+                      <div
+                        className={`h-8 w-[100%] ${
+                          recurralInterval === "annual"
+                            ? "bg-slate-800 shadow-lg text-white"
+                            : "text-slate-800"
+                        } flex items-center justify-center rounded-md mr-1 cursor-pointer rounded-l-none`}
+                        onClick={() => setRecurralInterval("annual")}
+                      >
+                        Annual
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+              <div className="mx-4 mt-2 flex gap-2">
+                <DateInput
+                  label="Start                                                                                                            Date"
+                  hint="Select Start Date"
+                  className=" text-2xl"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+                <DateInput
+                  label="End Date"
+                  hint="Select End Date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="text-2xl"
+                />
+              </div>
+              <div className="mx-4 mt-2 flex gap-2">
+                <TimeInput
+                  label="Start Time"
+                  hint="Select Start Time"
+                  className=" text-2xl"
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                />
+                <TimeInput
+                  label="End Time"
+                  hint="Select End Time"
+                  className="text-2xl"
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                />
+              </div>
+
+              {/* :Attachment */}
+              <div className="flex flex-col mx-4 mt-4">
+                <div className="flex font-bold items-center gap-1">
+                  <Attachment fontSize="small" /> Attachments
+                </div>
+                <LineBreak className="mt-1" />
+              </div>
+              <div className="flex flex-col mx-4">
+                <div className="flex flex-wrap">
+                  {files.map((file, index) => (
+                    <div
+                      key={index}
+                      className="h-14 w-36 mt-4 flex justify-between border border-slate-500 rounded-md mr-2 px-2 py-1 "
+                    >
+                      <div className="flex flex-col w-24 text-xs font-bold text-ellipsis line-clamp-2 whitespace-nowrap overflow-hidden">
+                        {file.name}
+                        <div className="text-xs font-normal">
+                          {formatSizeInBytes(file.size)}
+                        </div>
+                      </div>
+                      <div>
+                        <Cancel
+                          className="cursor-pointer"
+                          fontSize="small"
+                          onClick={() => {
+                            setFiles((prev) =>
+                              prev.filter(
+                                (file) => file.name !== files[index].name
+                              )
+                            );
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  <label
+                    htmlFor="attatchment-add-button"
+                    className="h-14 w-36 mt-4 rounded-md flex items-center justify-center cursor-pointer border border-slate-500 hover:bg-slate-200"
+                  >
+                    <input
+                      id="attatchment-add-button"
+                      hidden
+                      type="file"
+                      onChange={(e) => {
+                        if (e.target && e.target.files?.length === 0) return;
+                        const newFiles: File[] = [];
+                        for (let i = 0; i < e.target.files!.length; i++) {
+                          newFiles.push(e.target.files!.item(i)!);
+                        }
+                        console.log(newFiles);
+                        setFiles((prev) => [...prev, ...newFiles]);
+                      }}
                     />
-                  </div>
-                )}
-                renderAutofillItem={(item, highlighted, selectItem, index) => (
-                  <div
-                    onClick={() => selectItem(index)}
-                    className={`flex gap-2 p-2 hover:bg-slate-400 cursor-pointer ${
-                      highlighted
-                        ? "bg-slate-400 border-l-2 border-slate-800"
-                        : "bg-white"
-                    }`}
-                  >
-                    <Avatar>{item.name[0]}</Avatar>
-                    <div className={`text-sm font-bold`}>
-                      {item.name}
-                      <div className="text-xs font-normal">{item.domain}</div>
+                    <Add fontSize="small" className="flex-grow" />
+                    <div className="text-xs font-semibold flex-grow">
+                      Add Attachment
                     </div>
-                  </div>
-                )}
-                options={people}
-                searchMapper={(p: any) => p.name}
-              />
-            </div>
-            <div className="mx-4 mt-2">
-              <AutofillInput
-                label="Cc"
-                hint="Mention Ccs to this Task"
-                renderSelected={(sel, removeItem, idx) => (
-                  <div
-                    key={idx}
-                    className="h-7 flex items-center justify-between text-xs ml-2 rounded-full bg-[#13495b] text-white min-w-[120px] text-ellipsis text-nowrap"
-                  >
-                    <div className="flex items-center">
-                      <Avatar className="mx-1 w-5 h-5 text-xs">
-                        {sel.name[0]}
-                      </Avatar>
-                      <div className="mr-2">{sel.name}</div>
-                    </div>
-                    <Cancel
-                      className="w-6 h-6 cursor-pointer mr-[0.125em]"
-                      onClick={() => removeItem(sel.id)}
-                    />
-                  </div>
-                )}
-                renderAutofillItem={(item, highlighted, selectItem, index) => (
-                  <div
-                    onClick={() => selectItem(index)}
-                    className={`flex gap-2 p-2 hover:bg-slate-400 cursor-pointer ${
-                      highlighted
-                        ? "bg-slate-400 border-l-2 border-slate-800"
-                        : "bg-white"
-                    }`}
-                  >
-                    <Avatar>{item.name[0]}</Avatar>
-                    <div className={`text-sm font-bold`}>
-                      {item.name}
-                      <div className="text-xs font-normal">{item.domain}</div>
-                    </div>
-                  </div>
-                )}
-                options={people}
-                searchMapper={(p) => p.name}
-              />
-            </div>
-            <div className="bg-slate-200 h-10 mx-4 mt-2 w-400 rounded-md">
-              <div className="m-2">
-                <div className="w-6 h-6 bg-slate-800"></div>
-                <div></div>
+                  </label>
+                </div>
+              </div>
+              <div className="mt-4">
+                <Editor />
+              </div>
+              <div className="mt-4 m-4">
+                <Button
+                  label="Submit"
+                  className="hover:bg-slate-800"
+                  onClick={submitTask}
+                />
               </div>
             </div>
-            <Editor />
           </div>
-          <div className="w-[320px] border-l bg-[#EEEEEE]">
-            <div className="font-[600] flex gap-3 items-center py-4 px-4 text-xl bg-[#0f4658fb] text-white">
-              <Comment fontSize={"small"} sx={{ color: "whitesmoke" }} />
-              Comments
+          <div className="w-[370px] border-l flex flex-col justify-between">
+            <div className="flex flex-col mx-4 mt-8 flex-grow">
+              <div className="flex font-bold items-center gap-1">
+                <CommentIcon fontSize="small" /> Comments
+              </div>
+              <LineBreak className="mt-1" />
             </div>
-            <LineBreak />
+            <div className="m-2 flex gap-2">
+              <TextInput label="Message" hint="Type a Comment" />
+              <div className="bg-slate-800 hover:bg-slate-700 flex items-center cursor-pointer justify-center w-20 rounded-md">
+                <Send sx={{ color: "white" }} />
+              </div>
+            </div>
           </div>
         </div>
-        <AddPeoplePopup open={showAddPeople} onClose={handleClose} />
       </div>
     </>
   );

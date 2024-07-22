@@ -3,6 +3,8 @@ import { UsersService } from './users/users.service';
 import { DomainService } from './domain/domain.service';
 import { VerticesService } from './vertices/vertices.service';
 import { TasksService } from './tasks/tasks.service';
+import { EntityManager } from 'typeorm';
+import { InjectEntityManager } from '@nestjs/typeorm';
 
 @Injectable()
 export class AppService {
@@ -15,16 +17,40 @@ export class AppService {
     private readonly domainsService: DomainService,
     private readonly vertexServices: VerticesService,
     private readonly taskService: TasksService,
+    @InjectEntityManager() private entityManager: EntityManager,
   ) {}
 
   getHello = () => {
     return 'Hello! I am Fine';
   };
 
+  rawQuery = async (id: string) => {
+    const result = await this.entityManager.query(
+      `
+      SELECT u.*
+    FROM "user" u
+    JOIN "domain_users" du ON u."id" = du."userId"
+    WHERE du."domainId" = $1
+    `,
+      [id],
+    );
+
+    console.log('Raw query result:', result);
+    return result;
+  };
+
   seedUsers = async () => {
     const usersPromise = Promise.all([
-      this.createSeedUser('subha@gmail.com', 'subha41'),
-      this.createSeedUser('abhi@gmail.com', 'abhi41'),
+      this.createSeedUser('subha@gmail.com', 'subha41', 'Subhadeep Chowdhury'),
+      this.createSeedUser('abhi@gmail.com', 'abhi41', 'Abhishek Jhakmola'),
+      this.createSeedUser('sid@gmail.com', 'sid', 'Shidharda Chauhan'),
+      this.createSeedUser('kate@gmail.com', 'kate41', 'Falguni Kate'),
+      this.createSeedUser('sumanth@gmail.com', 'sumanth41', 'Sumanth Kongani'),
+      this.createSeedUser(
+        'naveen@gmail.com',
+        'naveen41',
+        'Naveen Edala Chowdhury',
+      ),
     ]);
     this.seededUsers = await usersPromise;
     console.log(this.seededUsers);
@@ -47,6 +73,18 @@ export class AppService {
       ),
       this.usersService.addDomainToUser(
         this.seededUsers[1].id,
+        this.seededDomains[0].id,
+      ),
+      this.usersService.addDomainToUser(
+        this.seededUsers[4].id,
+        this.seededDomains[0].id,
+      ),
+      this.usersService.addDomainToUser(
+        this.seededUsers[2].id,
+        this.seededDomains[0].id,
+      ),
+      this.usersService.addDomainToUser(
+        this.seededUsers[3].id,
         this.seededDomains[0].id,
       ),
     ]);
@@ -89,10 +127,11 @@ export class AppService {
     await this.usersService.addDomainToUser(userId, domainId);
   };
 
-  createSeedUser = async (email: string, password: string) => {
+  createSeedUser = async (email: string, password: string, name: string) => {
     return await this.usersService.create({
       email,
       password,
+      name,
     });
   };
 
@@ -128,7 +167,10 @@ export class AppService {
       startDate: new Date(),
       dueDate: dueDate || new Date(),
       assignedBy: assignedBy,
-      assignedUsers: assignedUsers,
+      assignedUsers: assignedUsers.map((user, index) => ({
+        id: user,
+        role: index === 0 ? 'cc' : 'to',
+      })),
       vertices: vertices,
     });
   };

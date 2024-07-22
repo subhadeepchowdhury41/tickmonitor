@@ -123,8 +123,6 @@ const AutofillInput = <T,>({
     setFilteredOptions([]);
   };
   const containerDimensions = containerRef.current?.getBoundingClientRect();
-  console.log(containerDimensions);
-
   return (
     <div
       ref={containerRef}

@@ -9,17 +9,24 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   OneToMany,
-  ManyToMany,
-  JoinTable,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { TaskUser } from './task-user.entity';
 
 export enum Urgency {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
   CRITICAL = 'critical',
+}
+
+export enum Interval {
+  NONE = 'none',
+  DAILY = 'daily',
+  WEEKLY = 'weekly',
+  MONTHLY = 'monthly',
+  ANNUAL = 'annual',
 }
 
 @Entity()
@@ -61,13 +68,11 @@ export class Task {
   })
   subTasks: Task[];
 
-  @ManyToMany(() => User, (user) => user.assignedTasks)
-  @JoinTable({
-    name: 'task_users',
-    joinColumn: { name: 'taskId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'userId', referencedColumnName: 'id' },
+  @OneToMany(() => TaskUser, (taskUsers) => taskUsers.task, {
+    cascade: true,
+    onDelete: 'CASCADE',
   })
-  assignedUsers: User[];
+  assignedUsers: TaskUser[];
 
   @ManyToOne(() => User, (user) => user.assignedTasks)
   assignedBy: User;
@@ -86,6 +91,13 @@ export class Task {
     onDelete: 'CASCADE',
   })
   comments: Comment[];
+
+  @Column({
+    type: 'enum',
+    enum: Interval,
+    default: Interval.NONE,
+  })
+  interval: Interval;
 
   @OneToMany(() => Attatchment, (attachment) => attachment.task, {
     cascade: true,

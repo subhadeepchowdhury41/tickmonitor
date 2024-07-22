@@ -2,9 +2,10 @@
 
 import Button from "@/components/ui/Button";
 import axios from "axios";
-import Image from "next/image";
+import { useEffect } from "react";
 
 export default function Home() {
+  useEffect(() => {}, []);
   return (
     <div className="w-full h-screen grid grid-cols-2">
       <div>

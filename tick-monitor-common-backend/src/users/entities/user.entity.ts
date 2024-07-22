@@ -3,6 +3,7 @@ import { Comment } from 'src/comments/entities/comment.entity';
 import { Domain } from 'src/domain/entities/domain.entity';
 import { Role } from 'src/roles/entity/roles.entity';
 import { Tasklog } from 'src/tasklog/entities/tasklog.entity';
+import { TaskUser } from 'src/tasks/entity/task-user.entity';
 import { Task } from 'src/tasks/entity/tasks.entity';
 import {
   Entity,
@@ -43,7 +44,7 @@ export class User {
   refreshToken: string;
 
   @ManyToMany(() => Task, (task) => task.assignedUsers)
-  assignedTasks: Task[];
+  assignedTasks: TaskUser[];
 
   @ManyToOne(() => Task, (task) => task.assignedBy)
   tasksAssignedByMe: Task;

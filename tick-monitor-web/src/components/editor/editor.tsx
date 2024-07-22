@@ -231,7 +231,7 @@ const                                                Editor = () => {
       <Editable
         renderElement={renderElement}
         onKeyDown={onKeyDown}
-        className="mx-4 px-2 outline-none"
+        className="mx-2 px-2 outline-none"
         style={{
           fontSize: 14,
         }}

@@ -20,6 +20,7 @@ import { Vertex } from './vertices/entities/vertex.entity';
 import { S3Module } from './s3/s3.module';
 import { Domain } from './domain/entities/domain.entity';
 import { Role } from './roles/entity/roles.entity';
+import { TaskUser } from './tasks/entity/task-user.entity';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { Role } from './roles/entity/roles.entity';
         Vertex,
         Domain,
         Role,
+        TaskUser,
       ],
       synchronize: true,
       dropSchema: true,

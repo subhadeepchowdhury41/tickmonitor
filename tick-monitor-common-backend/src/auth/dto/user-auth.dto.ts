@@ -12,4 +12,5 @@ export class UserAuthDto {
   password: string;
 
   sub?: string;
+  name?: string;
 }

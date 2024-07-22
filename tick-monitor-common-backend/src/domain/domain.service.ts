@@ -41,6 +41,21 @@ export class DomainService {
       console.error(err);
     }
   };
+  addUserToDomain = async (domainId: string, userId: string) => {
+    try {
+      const queriedUser = await this.userService.findById(userId);
+      const queriedDomain = await this.domainRepository.findOne({
+        where: { id: domainId },
+        relations: ['users'],
+      });
+      queriedDomain.users.push(queriedUser);
+      return await this.domainRepository.save(queriedDomain);
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  };
+
   findById = async (id: string, relations?: string[]) => {
     return await this.domainRepository.findOne({
       where: { id: id },
@@ -49,5 +64,29 @@ export class DomainService {
   };
   findAll = async () => {
     return await this.domainRepository.find();
+  };
+  findAllUsersByDomain = async (id: string) => {
+    try {
+      const queriedDomain = await this.domainRepository.findOne({
+        where: { id: id },
+        relations: ['users'],
+      });
+      return queriedDomain.users;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  };
+  findAllVerticalsByDomain = async (id: string) => {
+    try {
+      const queriedDomain = await this.domainRepository.findOne({
+        where: { id: id },
+        relations: ['vertices'],
+      });
+      return queriedDomain.vertices;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
   };
 }

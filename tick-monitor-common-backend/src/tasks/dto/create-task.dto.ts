@@ -1,6 +1,11 @@
 import { Urgency } from '../entity/tasks.entity';
 import { IsArray, IsDate, IsNotEmpty } from 'class-validator';
 
+export interface TaskUserInit {
+  id: string;
+  role: 'cc' | 'to';
+}
+
 export class CreateTaskDto {
   @IsNotEmpty()
   title: string;
@@ -14,7 +19,7 @@ export class CreateTaskDto {
   assignedBy: string;
 
   @IsArray()
-  assignedUsers: string[];
+  assignedUsers: TaskUserInit[];
 
   @IsArray()
   vertices: string[];

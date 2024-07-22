@@ -7,10 +7,11 @@ import { UsersModule } from 'src/users/users.module';
 import { CommentsModule } from 'src/comments/comments.module';
 import { AttatchmentsModule } from 'src/attatchments/attatchments.module';
 import { VerticesModule } from 'src/vertices/vertices.module';
+import { TaskUser } from './entity/task-user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Task]),
+    TypeOrmModule.forFeature([Task, TaskUser]),
     forwardRef(() => UsersModule),
     forwardRef(() => CommentsModule),
     forwardRef(() => AttatchmentsModule),

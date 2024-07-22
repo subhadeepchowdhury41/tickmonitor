@@ -7,6 +7,7 @@ import { UsersService } from 'src/users/users.service';
 import { CommentsService } from 'src/comments/comments.service';
 import { AttatchmentsService } from 'src/attatchments/attatchments.service';
 import { VerticesService } from 'src/vertices/vertices.service';
+import { TaskUser } from './entity/task-user.entity';
 
 @Injectable()
 export class TasksService {
@@ -15,6 +16,8 @@ export class TasksService {
     private readonly tasksRepository: Repository<Task>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
+    @InjectRepository(TaskUser)
+    private readonly taskUserRepository: Repository<TaskUser>,
     @Inject(forwardRef(() => CommentsService))
     private readonly commentService: CommentsService,
     @Inject(forwardRef(() => AttatchmentsService))
@@ -84,14 +87,21 @@ export class TasksService {
       createTaskDto.assignedBy,
     );
     initTask.assignedBy = assignerUser;
-    assignedUsers?.forEach(async (user) => {
-      const fetchedUser = await this.usersService.checkValidUser(user);
-      initTask.assignedUsers.push(fetchedUser);
-    });
     vertices?.forEach(async (vertex) => {
       const fetchedVertex = await this.vertexService.findById(vertex);
       initTask.vertices.push(fetchedVertex);
     });
-    return await this.tasksRepository.save(initTask);
+    const createdTask = await this.tasksRepository.save(initTask);
+    assignedUsers?.forEach(async (user) => {
+      const fetchedUser = await this.usersService.checkValidUser(user.id);
+      const initTaskUser = this.taskUserRepository.create({
+        task: createdTask,
+        user: fetchedUser,
+        role: user.role,
+      });
+      const createdTaskUser = await this.taskUserRepository.save(initTaskUser);
+      createdTask.assignedUsers.push(createdTaskUser);
+    });
+    return await this.tasksRepository.save(createdTask);
   };
 }

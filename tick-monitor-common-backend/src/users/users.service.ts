@@ -28,7 +28,10 @@ export class UsersService {
     return await this.usersRepository.find({ relations: ['domains'] });
   };
   findById = async (id: string): Promise<User | undefined> => {
-    return this.usersRepository.findOne({ where: { id: id } });
+    return this.usersRepository.findOne({
+      where: { id: id },
+      relations: ['domains'],
+    });
   };
 
   findByEmail = async (email: string): Promise<User | undefined> => {
@@ -69,11 +72,14 @@ export class UsersService {
     if (!queriedUser) {
       throw new NotFoundException('User Not Found');
     }
-    const queriedDomain = await this.domainService.findById(domainId);
+    const queriedDomain = await this.domainService.findById(domainId, [
+      'users',
+    ]);
     if (!queriedDomain) {
       throw new NotFoundException('Domain not Found');
     }
     queriedUser.domains.push(queriedDomain);
+    this.domainService.addUserToDomain(domainId, userId);
     return this.usersRepository.save(queriedUser);
   };
 

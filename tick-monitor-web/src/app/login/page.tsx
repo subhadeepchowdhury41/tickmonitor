@@ -12,10 +12,12 @@ import axios from "axios";
 import useSnackbar from "@/lib/hooks/useSnackbar";
 import LoginLoader from "@/components/loaders/login-loader";
 import { validateEmail } from "@/lib/utils/validators";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Login = () => {
   const router = useRouter();
   const showSnackbar = useSnackbar();
+  const { signin } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState({});
@@ -57,8 +59,8 @@ const Login = () => {
       });
       return;
     }
-    await axios
-      .post("/api/auth/signin", { email, password }, { withCredentials: true })
+
+    await signin(email, password)
       .then((res) => {
         const data = res.data;
         if (!data.success) {

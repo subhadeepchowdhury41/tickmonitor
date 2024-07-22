@@ -19,7 +19,7 @@ export const POST = async (req: Request) => {
     const { accessToken, refreshToken } = response.data;
     const nextResponse = NextResponse.json({
       success: true,
-      response: { email: response.data.email },
+      response: { email: response.data.email, accessToken },
     });
     nextResponse.cookies.set("accessToken", accessToken, {
       httpOnly: true,
