@@ -107,7 +107,7 @@ const Element = ({
   }
 };
 
-const                                                Editor = () => {
+const Editor = () => {
   const editor = useMemo(() => withReact(createEditor() as ReactEditor), []);
   const [target, setTarget] = useState<Range | null>(null);
   const [autoFills, setAutoFills] = useState<string[]>([]);
@@ -231,6 +231,9 @@ const                                                Editor = () => {
       <Editable
         renderElement={renderElement}
         onKeyDown={onKeyDown}
+        onBlur={() => {
+          setAutoFills([]);
+        }}
         className="mx-2 px-2 outline-none"
         style={{
           fontSize: 14,

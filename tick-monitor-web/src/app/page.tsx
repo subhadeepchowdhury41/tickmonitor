@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/form/Button";
 import axios from "axios";
 import { useEffect } from "react";
 

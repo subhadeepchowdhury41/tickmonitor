@@ -1,14 +1,42 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+"use client";
+
 import axios from "axios";
-import { NextResponse } from "next/server";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useAuth } from "./AuthContext";
+import { Task } from "@/lib/types/task.type";
 
-interface TasksContextType {}
+interface TasksContextType {
+  myTasks: Task[];
+  tasksByMe: Task[];
+  syncTasks: () => Promise<void>;
+  createTask: ({
+    title,
+    description,
+    startDate,
+    dueDate,
+    startTime,
+    dueTime,
+    interval,
+  }: {
+    title: string;
+    description: string;
+    startDate: string;
+    dueDate: string;
+    startTime: string;
+    dueTime: string;
+    interval: Interval;
+  }) => Promise<void>;
+}
 
-const TasksContext = createContext<TasksContextType | null>({});
+const TasksContext = createContext<TasksContextType | null>(null);
 
 type Interval = "DAILY" | "WEEKLY" | "MONTHLY" | "ANNUAL";
 
 export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
+  const auth = useAuth();
+  const [myTasks, setMyTasks] = useState<Task[]>([]);
+  const [tasksByMe, setTasksByMe] = useState<Task[]>([]);
   const createTask = async ({
     title,
     description,
@@ -20,10 +48,10 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
   }: {
     title: string;
     description: string;
-    startDate: Date;
-    dueDate: Date;
-    startTime: Date;
-    dueTime: Date;
+    startDate: string;
+    dueDate: string;
+    startTime: string;
+    dueTime: string;
     interval?: Interval;
   }) => {
     try {
@@ -34,15 +62,43 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
         startTime,
         dueDate,
         dueTime,
-        interval
+        interval,
       });
-      return NextResponse.json({ success: true, response: response.data });
     } catch (err) {
-      return NextResponse.json({ success: false, error: err });
+      throw err;
     }
   };
+  const getTasks = async () => {
+    try {
+      const response = await axios.get(`/api/users/${auth?.user.sub}/tasks/`);
+      return response.data.response;
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  useEffect(() => {
+    console.log("SET_MY_TASKS: ", myTasks);
+  }, [myTasks]);
+  useEffect(() => {
+    console.log("SET_TASKS_BY_ME: ", tasksByMe);
+  }, [tasksByMe]);
+  useEffect(() => {
+    if (!auth?.user) return;
+    getTasks().then((response) => {
+      setMyTasks(response.assigned);
+      setTasksByMe(response.assigns);
+    });
+  }, [auth?.user]);
+  const syncTasks = async () => {
+    getTasks().then((response) => {
+      setMyTasks(response.assigned);
+      setTasksByMe(response.assigns);
+    });
+  };
   return (
-    <TasksContext.Provider value={{ createTask }}>
+    <TasksContext.Provider
+      value={{ createTask, myTasks, tasksByMe, syncTasks }}
+    >
       {children}
     </TasksContext.Provider>
   );

@@ -42,7 +42,7 @@ import { TaskUser } from './tasks/entity/task-user.entity';
         TaskUser,
       ],
       synchronize: true,
-      dropSchema: true,
+      // dropSchema: true,
     }),
     UsersModule,
     AuthModule,

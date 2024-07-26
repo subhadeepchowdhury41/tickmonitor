@@ -4,8 +4,8 @@ import Image from "next/image";
 import AbLogo from "@/assets/logos/abirla.png";
 import BgImage from "@/assets/images/bg.png";
 import TickMGif from "@/assets/gifs/tickmonitor.gif";
-import TextInput from "@/components/ui/TextInput";
-import Button from "@/components/ui/Button";
+import TextInput from "@/components/ui/form/TextInput";
+import Button from "@/components/ui/form/Button";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -76,9 +76,9 @@ const Login = () => {
           text: `Successfully Logged In as ${data.response.email}`,
           variant: "success",
         });
-        router.replace("/");
+        router.replace("/dashboard/task");
       })
-      .catch((err) => {
+      .catch((err: any) => {
         showSnackbar({
           key: "login_error_msg",
           text: "Error Logging In",

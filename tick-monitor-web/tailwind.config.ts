@@ -67,6 +67,7 @@ const config: Config = {
         "login-form-slide": "loginFormSlide 0.4s ease-in forwards",
         "login-width-grow": "loginWidthGrow 0.4s ease-in forwards",
         "drawer-arrow-grow": "loginLoaderAppear 0.2s ease-in forwards",
+        "dropdown-appear-grow": "loginWidthGrow 0.2s ease-in forwards",
       },
     },
   },

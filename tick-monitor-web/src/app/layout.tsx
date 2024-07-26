@@ -5,6 +5,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import SnackbarProvider from "@/lib/context/SnackbarContext";
 import { UserProvider } from "@/contexts/UserContext";
 import { DomainProvider } from "@/contexts/DomainContext";
+import { TasksProvider } from "@/contexts/TasksContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +25,9 @@ export default function RootLayout({
         <SnackbarProvider>
           <AuthProvider>
             <DomainProvider>
-              <UserProvider>{children}</UserProvider>
+              <TasksProvider>
+                <UserProvider>{children}</UserProvider>
+              </TasksProvider>
             </DomainProvider>
           </AuthProvider>
         </SnackbarProvider>

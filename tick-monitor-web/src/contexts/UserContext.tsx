@@ -34,7 +34,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
   useEffect(() => {
-    console.log("CALLING");
     if (!auth?.user) return;
     fetchUserDetails(auth.user?.sub).then((response) => {
       setCurrent(response);

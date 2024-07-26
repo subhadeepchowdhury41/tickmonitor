@@ -1,7 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {
-  ChangeEventHandler,
-  Component,
   CSSProperties,
   DetailedHTMLProps,
   InputHTMLAttributes,
@@ -10,20 +8,8 @@ import React, {
   useRef,
 } from "react";
 
-const AutofillInput = <T,>({
-  value,
-  label,
-  hint,
-  inputProps,
-  style,
-  className,
-  inputClassName,
-  onChange,
-  icon,
-  renderSelected,
-  renderAutofillItem,
-  options,
-}: {
+interface AutofillInputProps<T> {
+  parentRef: React.RefObject<HTMLDivElement> | null;
   value?: string | number;
   label: string;
   hint: string;
@@ -49,31 +35,54 @@ const AutofillInput = <T,>({
   ) => React.ReactNode;
   options: T[];
   searchMapper: (val: T) => string;
-}) => {
+  maxItems?: number;
+}
+
+const AutofillInput = <T,>({
+  value,
+  label,
+  hint,
+  inputProps,
+  style,
+  className,
+  inputClassName,
+  onChange,
+  icon,
+  renderSelected,
+  renderAutofillItem,
+  options,
+  parentRef,
+  maxItems = Infinity,
+}: AutofillInputProps<T>) => {
   const [inputValue, setInputValue] = useState(value || "");
   const [filteredOptions, setFilteredOptions] = useState(options);
   const [selected, setSelected] = useState<any[]>([]);
+  const [focused, setFocused] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [containerDimensions, setContainerDimensions] = useState<DOMRect>();
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     setFilteredOptions(
       options.filter((option: any) =>
-        option.name
-          .toString()
-          .toLowerCase()
-          .includes(inputValue.toString().toLowerCase())
+        inputValue === ""
+          ? true
+          : option.name
+              .toString()
+              .toLowerCase()
+              .includes(inputValue.toString().toLowerCase())
       )
     );
     setHighlightedIndex(-1);
-  }, [inputValue, options]);
+  }, [inputValue, options, focused]);
 
   const handleChange = (val: string) => {
     setInputValue(val);
   };
 
   const handleSelect = (option: T) => {
-    if (!selected.includes(option)) {
+    console.log("ADD_OPTION", option);
+    if (selected.length < maxItems && !selected.includes(option)) {
       const newSelected = [...selected, option];
       setSelected(newSelected);
       setInputValue("");
@@ -81,11 +90,20 @@ const AutofillInput = <T,>({
       if (onChange) {
         onChange(option, newSelected);
       }
+    } else {
+      alert(`Maximum of ${maxItems} items can be selected.`);
     }
   };
 
+  const handleFocus = () => {
+    setTimeout(() => setFocused(true), 100);
+  };
+
   const handleBlur = () => {
-    setTimeout(() => setFilteredOptions([]), 100);
+    setTimeout(() => {
+      setFilteredOptions([]);
+      setFocused(false);
+    }, 500);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -113,16 +131,23 @@ const AutofillInput = <T,>({
         break;
     }
   };
-
   const removeItem = (id: string) => {
     setSelected((prev) => prev.filter((item) => item.id !== id));
   };
-
   const selectItem = (idx: number) => {
+    console.log("SELECTED: ", idx);
     handleSelect(filteredOptions[idx]);
-    setFilteredOptions([]);
   };
-  const containerDimensions = containerRef.current?.getBoundingClientRect();
+  const handleScroll = (): void => {
+    setContainerDimensions(containerRef.current?.getBoundingClientRect());
+  };
+  useEffect(() => {
+    setContainerDimensions(containerRef!.current!.getBoundingClientRect());
+    parentRef?.current!.addEventListener("scroll", handleScroll);
+    return () =>
+      parentRef?.current?.removeEventListener("scroll", handleScroll);
+  }, [containerRef]);
+
   return (
     <div
       ref={containerRef}
@@ -131,26 +156,33 @@ const AutofillInput = <T,>({
       <label className="text-xs px-2">{label}</label>
       <div className="flex flex-wrap gap-1">
         {selected.map((sel, idx) => renderSelected(sel, removeItem, idx))}
-        <input
-          ref={inputRef}
-          className={`outline-none px-2 py-1 rounded-lg text-sm flex-grow ${inputClassName}`}
-          {...inputProps}
-          style={{ fontSize: 13, ...style }}
-          value={inputValue}
-          placeholder={hint}
-          onChange={(e) => handleChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onBlur={handleBlur}
-        />
-        {icon}
+        {selected.length < maxItems ? (
+          <>
+            <input
+              ref={inputRef}
+              className={`outline-none px-2 py-1 rounded-lg text-sm flex-grow ${inputClassName}`}
+              {...inputProps}
+              style={{ fontSize: 13, ...style }}
+              value={inputValue}
+              placeholder={hint}
+              onChange={(e) => handleChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onBlur={handleBlur}
+              onFocus={handleFocus}
+            />
+            {icon}
+          </>
+        ) : (
+          <></>
+        )}
       </div>
-      {inputValue && filteredOptions.length > 0 && (
+      {focused && filteredOptions.length > 0 && selected.length < maxItems && (
         <div
-          className={`absolute top-[${
-            containerDimensions?.top ?? 0 + 40
-          }px] left-[${containerDimensions?.left}px] right-[${
-            containerDimensions?.right
-          }px] shadow-xl border border-slate-400 rounded-md z-10`}
+          style={{
+            top: `${(containerDimensions?.top ?? 0) + 60}px`,
+            width: `${containerDimensions?.width}px`,
+          }}
+          className={`absolute animate-dropdown-appear-grow shadow-xl border border-slate-400 rounded-md z-50`}
         >
           {filteredOptions.map((option, idx) =>
             renderAutofillItem(

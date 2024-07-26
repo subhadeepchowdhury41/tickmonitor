@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Task } from './entity/tasks.entity';
@@ -8,6 +13,7 @@ import { CommentsService } from 'src/comments/comments.service';
 import { AttatchmentsService } from 'src/attatchments/attatchments.service';
 import { VerticesService } from 'src/vertices/vertices.service';
 import { TaskUser } from './entity/task-user.entity';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TasksService {
@@ -37,9 +43,8 @@ export class TasksService {
         'subTasks',
         'dependencies',
         'comments',
+        'comments.user',
         'attatchments',
-        'assignedUsers',
-        'domains',
         'logs',
       ],
     });
@@ -47,16 +52,31 @@ export class TasksService {
 
   findAll = async (userId?: string) => {
     if (!userId) {
-      return await this.tasksRepository.find();
+      return await this.tasksRepository.find({
+        relations: ['comments'],
+      });
     }
-    const assigned = await this.tasksRepository.find({
-      where: { assignedUsers: { id: userId } },
-      relationLoadStrategy: 'join',
-      relations: ['assignedUsers', 'subTasks', 'dependencies'],
-    });
+    const assigned = await this.tasksRepository
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.assignedUsers', 'taskUser')
+      .leftJoinAndSelect('taskUser.user', 'user')
+      .leftJoinAndSelect('task.assignedBy', 'assignedBy')
+      .leftJoinAndSelect('task.subTasks', 'subTasks')
+      .leftJoinAndSelect('task.dependencies', 'dependencies')
+      .leftJoinAndSelect('task.vertices', 'vertices')
+      .where('user.id = :userId', { userId })
+      .orWhere('assignedBy.id = :userId', { userId })
+      .getMany();
     const assigns = await this.tasksRepository.find({
       where: { assignedBy: { id: userId } },
-      relations: ['assignedUsers', 'subTasks', 'dependencies'],
+      relations: [
+        'assignedUsers',
+        'assignedUsers.user',
+        'vertices',
+        'assignedBy',
+        'subTasks',
+        'dependencies',
+      ],
     });
     return { assigns, assigned };
   };
@@ -103,5 +123,17 @@ export class TasksService {
       createdTask.assignedUsers.push(createdTaskUser);
     });
     return await this.tasksRepository.save(createdTask);
+  };
+
+  update = async (id: string, updateTaskDto: UpdateTaskDto) => {
+    try {
+      const task = await this.tasksRepository.findOne({ where: { id: id } });
+      if (!task) {
+        throw new NotFoundException('Task not found');
+      }
+      await this.tasksRepository.update(id, updateTaskDto);
+    } catch (err) {
+      throw err;
+    }
   };
 }

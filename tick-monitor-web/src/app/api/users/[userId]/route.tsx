@@ -6,7 +6,6 @@ export const GET = async (
   { params }: { params: { userId: string } }
 ) => {
   try {
-    console.log(params.userId);
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/users/${params.userId}`
     );

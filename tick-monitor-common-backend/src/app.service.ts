@@ -42,8 +42,8 @@ export class AppService {
   seedUsers = async () => {
     const usersPromise = Promise.all([
       this.createSeedUser('subha@gmail.com', 'subha41', 'Subhadeep Chowdhury'),
-      this.createSeedUser('abhi@gmail.com', 'abhi41', 'Abhishek Jhakmola'),
-      this.createSeedUser('sid@gmail.com', 'sid', 'Shidharda Chauhan'),
+      this.createSeedUser('abhi@gmail.com', 'abhi41', 'Abhishek Jakhmola'),
+      this.createSeedUser('sid@gmail.com', 'sid', 'Sidhardha'),
       this.createSeedUser('kate@gmail.com', 'kate41', 'Falguni Kate'),
       this.createSeedUser('sumanth@gmail.com', 'sumanth41', 'Sumanth Kongani'),
       this.createSeedUser(

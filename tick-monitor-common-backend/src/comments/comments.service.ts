@@ -28,16 +28,25 @@ export class CommentsService {
 
   create = async (createCommentDto: CreateCommentDto) => {
     const { userId, content, taskId, attatchments } = createCommentDto;
-    const createdComment = new Comment();
+    const initComment = this.commentsRepository.create({
+      content,
+    });
     attatchments?.forEach(async (attatchment) => {
-      createdComment.attatchments.push(
+      initComment.attatchments.push(
         await this.attatchmentServices.findById(attatchment),
       );
     });
-    createdComment.user = await this.userServices.findById(userId);
-    createdComment.task = await this.taskService.findById(taskId);
-    createdComment.content = content;
-    return await this.commentsRepository.save(createdComment);
+    const user = await this.userServices.findById(userId);
+    const task = await this.taskService.findById(taskId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (!task) {
+      throw new NotFoundException('Task not found');
+    }
+    initComment.user = user;
+    initComment.task = task;
+    return await this.commentsRepository.save(initComment);
   };
 
   findAll = async ({ taskId, userId }) => {
@@ -45,6 +54,14 @@ export class CommentsService {
       return await this.commentsRepository.find({
         where: { task: { id: taskId }, user: { id: userId } },
       });
+    }
+    const task = await this.taskService.findById(taskId);
+    const user = await this.userServices.findById(userId);
+    if (!task) {
+      throw new NotFoundException('Task not found');
+    }
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
     if (taskId) {
       return await this.commentsRepository.find({

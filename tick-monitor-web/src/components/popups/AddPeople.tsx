@@ -2,7 +2,7 @@ import { People, Search } from "@mui/icons-material";
 import { Avatar, Dialog, MenuItem, TextField } from "@mui/material";
 import { LineBreak } from "../ui/LineBeak";
 import { useState } from "react";
-import TextInput from "../ui/TextInput";
+import TextInput from "../ui/form/TextInput";
 
 const AddPeoplePopup = ({
   open,
@@ -86,12 +86,19 @@ const AddPeoplePopup = ({
                     <div>{p.domain}</div>
                   </div>
                 </div>
-               {selectedPepople.filter(per => per.id === p.id).length > 0 ? <div className="justify-self-end self-center">
-                  <TextField select defaultValue={"Assist"} size="small" className="w-24">
-                    <MenuItem value={"leader"}>Primary</MenuItem>
-                    <MenuItem value={"Assist"}>Cc</MenuItem>
-                  </TextField>
-                </div> : null}
+                {selectedPepople.filter((per) => per.id === p.id).length > 0 ? (
+                  <div className="justify-self-end self-center">
+                    <TextField
+                      select
+                      defaultValue={"Assist"}
+                      size="small"
+                      className="w-24"
+                    >
+                      <MenuItem value={"leader"}>Primary</MenuItem>
+                      <MenuItem value={"Assist"}>Cc</MenuItem>
+                    </TextField>
+                  </div>
+                ) : null}
               </div>
             ))}
           </div>

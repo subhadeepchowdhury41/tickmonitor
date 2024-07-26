@@ -2,8 +2,8 @@
 import Image from "next/image";
 import AbLogo from "@/assets/logos/abirla.png";
 import BgImage from "@/assets/images/bg.png";
-import TextInput from "@/components/ui/TextInput";
-import Button from "@/components/ui/Button";
+import TextInput from "@/components/ui/form/TextInput";
+import Button from "@/components/ui/form/Button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import axios from "axios";

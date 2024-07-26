@@ -3,9 +3,9 @@
 import Image from "next/image";
 import AbLogo from "@/assets/logos/abirla.png";
 import BgImage from "@/assets/images/bg.png";
-import TextInput from "@/components/ui/TextInput";
+import TextInput from "@/components/ui/form/TextInput";
 import { useState } from "react";
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/form/Button";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");

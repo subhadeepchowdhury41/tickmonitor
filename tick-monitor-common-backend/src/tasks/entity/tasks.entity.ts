@@ -29,6 +29,13 @@ export enum Interval {
   ANNUAL = 'annual',
 }
 
+export enum Status {
+  INITIATED = 'is_initiated',
+  INPROGRESS = 'in_progress',
+  COMPLETED = 'completed',
+  HOLD = 'on_hold',
+}
+
 @Entity()
 export class Task {
   @PrimaryGeneratedColumn('uuid')
@@ -51,6 +58,13 @@ export class Task {
 
   @Column({ default: 0 })
   level: number;
+
+  @Column({
+    type: 'enum',
+    enum: Status,
+    default: Status.INITIATED,
+  })
+  status: string;
 
   @Column({
     type: 'enum',
