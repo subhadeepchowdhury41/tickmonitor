@@ -16,3 +16,14 @@ export const getRandomColor = (str: string) => {
   const color = colors[randomIndex];
   return color;
 };
+
+export const colorTheme = {
+  primary: "bg-classicTrustworthy-primary",
+  secondary: "bg-classicTrustworthy-secondary",
+  accent: "bg-classicTrustworthy-accent",
+  neutral: "bg-classicTrustworthy-neutral",
+  bg: "bg-classicTrustworthy-bg",
+  text: "text-classicTrustworthy-text",
+  textPrimary: "text-classicTrustworthy-primary",
+  textNeutral: "text-classicTrustworthy-neutral",
+};

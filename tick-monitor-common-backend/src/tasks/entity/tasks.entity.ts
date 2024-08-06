@@ -30,7 +30,7 @@ export enum Interval {
 }
 
 export enum Status {
-  INITIATED = 'is_initiated',
+  INITIATED = 'to_initiate',
   INPROGRESS = 'in_progress',
   COMPLETED = 'completed',
   HOLD = 'on_hold',

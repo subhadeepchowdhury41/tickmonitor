@@ -6,7 +6,7 @@ const DashboardTemplate = ({ children }: { children: React.ReactNode }) => {
     <>
       <div className="flex h-screen">
         <Drawer />
-        <div className="flex-grow">
+        <div className="flex-grow bg-bg">
           <Appbar />
           {children}
         </div>

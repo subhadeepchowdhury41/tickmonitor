@@ -8,6 +8,68 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        // classicTrustworthy: {
+        //   primary: "#001f3f",
+        //   secondary: "#d3d3d3",
+        //   accent: "#ff851b",
+        //   neutral: "#ffffff",
+        //   text: "#333333",
+        //   bg: "#f0f0f0",
+        //   highlight: "#ff851b",
+        //   disabled: "#d3d3d3",
+        // },
+        // modernMinimalist: {
+        primary: "#333333",
+        secondary: "#7fdbff",
+        accent: "#01ff70",
+        neutral: "#ffffff",
+        text: "#333333",
+        bg: "#f0f0f0",
+        highlight: "#01ff70",
+        disabled: "#7fdbff",
+        // },
+        // professionalCalming: {
+        //   primary: "#008080",
+        //   secondary: "#f5f5f5",
+        //   accent: "#ff7f50",
+        //   neutral: "#ffffff",
+        //   text: "#333333",
+        //   bg: "#e0ffff",
+        //   highlight: "#ff7f50",
+        //   disabled: "#f5f5f5",
+        // },
+        // vibrantEnergetic: {
+        //   primary: "#4169e1",
+        //   secondary: "#ffd700",
+        //   accent: "#ff4500",
+        //   neutral: "#ffffff",
+        //   text: "#333333",
+        //   bg: "#fafad2",
+        //   highlight: "#ff4500",
+        //   disabled: "#ffd700",
+        // },
+        // elegantSophisticated: {
+        //   primary: "#800020",
+        //   secondary: "#fffdd0",
+        //   accent: "#ffd700",
+        //   neutral: "#ffffff",
+        //   text: "#333333",
+        //   bg: "#f5f5f5",
+        //   highlight: "#ffd700",
+        //   disabled: "#fffdd0",
+        // },
+        // freshNatural: {
+        //   primary: "#228b22",
+        //   secondary: "#f5f5dc",
+        //   accent: "#87ceeb",
+        //   neutral: "#ffffff",
+        //   text: "#333333",
+        //   bg: "#e0f0d8",
+        //   highlight: "#87ceeb",
+        //   disabled: "#f5f5dc",
+        // },
+      },
       keyframes: {
         loginBgShrink: {
           "0%": {

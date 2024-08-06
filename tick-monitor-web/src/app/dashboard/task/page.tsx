@@ -4,36 +4,13 @@ import DateFilter from "@/components/menus/DateFilter";
 import ProjectsFilter from "@/components/menus/ProjectsFilter";
 import StatusFilter from "@/components/menus/StatusFilter";
 import UrgencyFilter from "@/components/menus/UrgencyFilter";
-import AssignedTaskCard from "@/components/task/AssignedTaskCard";
 import TaskRow from "@/components/task/TaskRow";
-import { LineBreak } from "@/components/ui/LineBeak";
 import SectionHeading from "@/components/ui/SectionHeading";
-import UserAvatar from "@/components/user/UserAvatar";
 import { useDomain } from "@/contexts/DomainContext";
 import { useTasks } from "@/contexts/TasksContext";
-import { urgencies } from "@/lib/utils/consts";
-import {
-  Add,
-  ArrowForward,
-  ArrowRight,
-  ArrowRightSharp,
-  CommentOutlined,
-  InfoOutlined,
-  KeyboardArrowDown,
-  List,
-  MoreVert,
-} from "@mui/icons-material";
-import {
-  Avatar,
-  Dialog,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
+import { colorTheme } from "@/lib/utils/colors";
+import { Add, List, MoreVert } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -77,44 +54,29 @@ const Tasks = () => {
   const handleProjectFilterClose = () => {
     setProjectFilterEl(null);
   };
-  console.log(tasks?.tasksByMe);
   return (
     <>
       <div
         style={{
-          height: "calc(100vh - 5rem)",
+          height: "calc(100vh - 3rem)",
         }}
-        className="flex-col flex"
+        className={`flex-col flex`}
       >
-        <div className="px-4 flex items-center justify-between text-2xl font-bold py-2 bg-blue-600">
-          <div className="flex items-center justify-between gap-2 text-white">
-            <List sx={{ color: "white" }} />
-            Task List
-          </div>
-          <div>
-            <IconButton
-              sx={{ bgcolor: "white", "&:hover": { bgcolor: "whitesmoke" } }}
-              onClick={() => {
-                router.push("/dashboard/task/create");
-              }}
-            >
-              <Add />
-            </IconButton>
-          </div>
-        </div>
         <div
-          className="flex flex-col overflow-y-scroll"
+          className={`px-4 flex items-center justify-between text-2xl font-bold`}
+        ></div>
+        <div
+          className={`flex flex-col overflow-y-scroll`}
           style={{
-            height: "calc(100vh - 5rem)",
+            height: "calc(100vh - 2rem)",
           }}
         >
           <SectionHeading text="Tasks" className="mx-4" />
           <div className="flex flex-col mx-4 mt-4">
             <div
-              className="rounded-md flex font-bold text-xs px-4
-                  justify-between"
+              className={`rounded-md w-full flex font-bold text-xs px-4 justify-between`}
             >
-              <div className="w-[230px] flex">
+              <div className="w-[230px] flex items-center">
                 <div>
                   <div className="">Title</div>
                 </div>
@@ -172,8 +134,8 @@ const Tasks = () => {
                 <div className="w-[120px]">Actions</div>
               </div>
             </div>
-            <div className="mt-1 ">
-              {tasks?.tasksByMe.map((t, index) => {
+            <div className="mt-1">
+              {tasks?.tasksByMeFiltered.map((t, index) => {
                 return <TaskRow key={index} t={t} />;
               })}
             </div>
@@ -185,23 +147,40 @@ const Tasks = () => {
         onClose={handleStatusFilterClose}
         anchRef={statusFilterEl}
         onChange={(curr, full) => {
-          console.log(curr, full);
+          tasks?.addFilter({
+            status: [
+              "All",
+              ...full.map((f) => f.replace(" ", "_").toLowerCase()),
+            ],
+          });
         }}
       />
       <ProjectsFilter
-        options={domain?.verticals ?? []}
-        onChange={(curr, full) => {}}
+        options={domain?.verticals.map((v) => v.name) ?? []}
+        onChange={(curr, full) => {
+          tasks?.addFilter({
+            verticals: ["All", ...full],
+          });
+        }}
         anchRef={projectFilterEl}
         onClose={handleProjectFilterClose}
       />
       <UrgencyFilter
         options={["Critical", "High", "Medium", "Low"]}
-        onChange={(curr, full) => {}}
+        onChange={(curr, full) => {
+          tasks?.addFilter({
+            urgency: ["All", ...full.map((f) => f.toLowerCase())],
+          });
+        }}
         anchRef={urgencyFilterEl}
         onClose={handleUrgencyFilterClose}
       />
       <DateFilter
-        onChange={(curr, full) => {}}
+        onChange={(curr, full) => {
+          tasks?.addFilter({
+            status: ["All", ...full],
+          });
+        }}
         onClose={handleDateFilterClose}
         anchRef={dateFilterEl}
       />

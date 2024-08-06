@@ -5,7 +5,7 @@ import { useState } from "react";
 
 export interface ProjectsFilterProps {
   anchRef: HTMLElement | null;
-  options: Vertical[];
+  options: string[];
   onChange: (curr: string, full: string[]) => void;
   onClose: () => void;
 }
@@ -16,7 +16,7 @@ const ProjectsFilter = ({
   onChange,
   onClose,
 }: ProjectsFilterProps) => {
-  const [filtered, setFiltered] = useState<Vertical[]>([]);
+  const [filtered, setFiltered] = useState<string[]>([]);
   return (
     <Menu
       sx={{
@@ -49,11 +49,11 @@ const ProjectsFilter = ({
             key={index}
             className="flex items-center justify-between rounded-full gap-2 h-7 w-[100px] px-2 bg-slate-800 text-white text-[10px]"
           >
-            {option.name}
+            {option}
             <div
               className="cursor-pointer"
               onClick={() => {
-                setFiltered(filtered.filter((o) => o.id !== option.id));
+                setFiltered(filtered.filter((o) => o !== option));
               }}
             >
               <Close fontSize="small" />
@@ -64,16 +64,19 @@ const ProjectsFilter = ({
       {options.map((option, index) => (
         <MenuItem
           onClick={() => {
+            let newFilters = filtered;
             if (filtered.includes(option)) {
-              setFiltered(filtered.filter((o) => o.id !== option.id));
-              return;
+              newFilters = newFilters.filter((o) => o !== option);
+            } else {
+              newFilters = [...newFilters, option];
             }
-            setFiltered((prev) => [...prev, options[index]]);
+            setFiltered(newFilters);
+            onChange(option, newFilters);
           }}
           key={index}
         >
           {filtered.includes(option) ? <Check /> : null}
-          {option.name}
+          {option}
         </MenuItem>
       ))}
     </Menu>

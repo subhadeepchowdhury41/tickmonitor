@@ -22,7 +22,7 @@ export class TasksController {
   }
 
   @Put(':id')
-  async update(@Param() id: string, @Body() body: UpdateTaskDto) {
+  async update(@Param('id') id: string, @Body() body: UpdateTaskDto) {
     return this.taskService.update(id, body);
   }
 }

@@ -64,11 +64,14 @@ const UrgencyFilter = ({
       {options.map((option, index) => (
         <MenuItem
           onClick={() => {
+            let newFilters = filtered;
             if (filtered.includes(option)) {
-              setFiltered(filtered.filter((o) => o !== option));
-              return;
+              newFilters = newFilters.filter((o) => o !== option);
+            } else {
+              newFilters = [...newFilters, option];
             }
-            setFiltered((prev) => [...prev, options[index]]);
+            setFiltered(newFilters);
+            onChange(option, newFilters);
           }}
           key={index}
         >

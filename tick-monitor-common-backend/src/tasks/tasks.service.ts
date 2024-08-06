@@ -46,6 +46,7 @@ export class TasksService {
         'comments.user',
         'attatchments',
         'logs',
+        'assignedUsers',
       ],
     });
   };
@@ -53,7 +54,7 @@ export class TasksService {
   findAll = async (userId?: string) => {
     if (!userId) {
       return await this.tasksRepository.find({
-        relations: ['comments'],
+        relations: ['comments', 'assignedUsers'],
       });
     }
     const assigned = await this.tasksRepository
@@ -127,11 +128,12 @@ export class TasksService {
 
   update = async (id: string, updateTaskDto: UpdateTaskDto) => {
     try {
+      console.log(id, updateTaskDto);
       const task = await this.tasksRepository.findOne({ where: { id: id } });
       if (!task) {
         throw new NotFoundException('Task not found');
       }
-      await this.tasksRepository.update(id, updateTaskDto);
+      return await this.tasksRepository.update(id, updateTaskDto);
     } catch (err) {
       throw err;
     }

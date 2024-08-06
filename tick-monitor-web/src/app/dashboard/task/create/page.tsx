@@ -115,31 +115,18 @@ const CreateTask = () => {
     <>
       <div
         style={{
-          height: "calc(100vh - 5rem)",
+          height: "calc(100vh - 6rem)",
         }}
         className="flex-col flex"
       >
-        {/* <div className="px-4 flex items-center justify-between text-2xl font-bold py-2 bg-blue-600">
-          <div className="flex items-center gap-2 text-white">
-            <IconButton
-              onClick={() => {
-                router.back();
-              }}
-            >
-              <ArrowBack sx={{ color: "white" }} />
-            </IconButton>
-            <Assignment sx={{ color: "white" }} />
-            Assign Task
-          </div>
-        </div> */}
         <div className="flex">
           <div className="flex-grow">
             <div
               ref={divRef}
               style={{
-                height: "calc(100vh - 5rem)",
+                height: "calc(100vh - 6.5rem)",
               }}
-              className="overflow-y-scroll pt-4"
+              className="overflow-y-scroll pt-2"
             >
               {/* :Details */}
               <div className="flex flex-col mx-4 mt-4">
@@ -453,8 +440,8 @@ const CreateTask = () => {
                     <div
                       className={`h-8 ${
                         !isRecurral
-                          ? "bg-slate-800 shadow-lg text-white"
-                          : "text-slate-800"
+                          ? "bg-primary shadow-lg text-white"
+                          : "text-primary"
                       } w-[100%] flex items-center justify-center rounded-md ml-1 cursor-pointer rounded-r-none`}
                       onClick={() => setIsRecurral(false)}
                     >
@@ -463,8 +450,8 @@ const CreateTask = () => {
                     <div
                       className={`h-8 w-[100%] ${
                         isRecurral
-                          ? "bg-slate-800 shadow-lg text-white"
-                          : "text-slate-800"
+                          ? "bg-primary shadow-lg text-white"
+                          : "text-primary"
                       } flex items-center justify-center rounded-md mr-1 cursor-pointer rounded-l-none`}
                       onClick={() => setIsRecurral(true)}
                     >
@@ -483,8 +470,8 @@ const CreateTask = () => {
                       <div
                         className={`h-8 ${
                           recurralInterval === "daily"
-                            ? "bg-slate-800 shadow-lg text-white"
-                            : "text-slate-800"
+                            ? "bg-primary shadow-lg text-white"
+                            : "text-primary"
                         } w-[100%] flex items-center justify-center rounded-md ml-1 cursor-pointer rounded-r-none`}
                         onClick={() => setRecurralInterval("daily")}
                       >
@@ -493,8 +480,8 @@ const CreateTask = () => {
                       <div
                         className={`h-8 w-[100%] ${
                           recurralInterval === "weekly"
-                            ? "bg-slate-800 shadow-lg text-white"
-                            : "text-slate-800"
+                            ? "bg-primary shadow-lg text-white"
+                            : "text-primary"
                         } flex items-center justify-center cursor-pointer`}
                         onClick={() => setRecurralInterval("weekly")}
                       >
@@ -503,8 +490,8 @@ const CreateTask = () => {
                       <div
                         className={`h-8 w-[100%] ${
                           recurralInterval === "monthly"
-                            ? "bg-slate-800 shadow-lg text-white"
-                            : "text-slate-800"
+                            ? "bg-primary shadow-lg text-white"
+                            : "text-primary"
                         } flex items-center justify-center cursor-pointer rounded-l-none`}
                         onClick={() => setRecurralInterval("monthly")}
                       >
@@ -513,8 +500,8 @@ const CreateTask = () => {
                       <div
                         className={`h-8 w-[100%] ${
                           recurralInterval === "annual"
-                            ? "bg-slate-800 shadow-lg text-white"
-                            : "text-slate-800"
+                            ? "bg-primary shadow-lg text-white"
+                            : "text-primary"
                         } flex items-center justify-center rounded-md mr-1 cursor-pointer rounded-l-none`}
                         onClick={() => setRecurralInterval("annual")}
                       >
@@ -625,13 +612,13 @@ const CreateTask = () => {
               <div className="mt-4 m-4">
                 <Button
                   label="Submit"
-                  className="hover:bg-slate-800"
+                  className="bg-primary"
                   onClick={submitTask}
                 />
               </div>
             </div>
           </div>
-          {/* <div className="w-[370px] border-l flex flex-col justify-between">
+          <div className="w-[370px] border-l flex flex-col justify-between">
             <div className="flex flex-col mx-4 mt-8 flex-grow">
               <div className="flex font-bold items-center gap-1">
                 <CommentIcon fontSize="small" /> Comments
@@ -640,11 +627,11 @@ const CreateTask = () => {
             </div>
             <div className="m-2 flex gap-2">
               <TextInput label="Message" hint="Type a Comment" />
-              <div className="bg-slate-800 hover:bg-slate-700 flex items-center cursor-pointer justify-center w-20 rounded-md">
+              <div className="bg-primary hover:bg-slate-700 flex items-center cursor-pointer justify-center w-20 rounded-md">
                 <Send sx={{ color: "white" }} />
               </div>
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
     </>

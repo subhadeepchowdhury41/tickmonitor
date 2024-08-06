@@ -1,3 +1,4 @@
+import { colorTheme } from "@/lib/utils/colors";
 import { ArrowRightAlt } from "@mui/icons-material";
 
 const DrawerItem = ({
@@ -12,23 +13,19 @@ const DrawerItem = ({
   return (
     <>
       <div
-        className={`w-[94%] h-16 mr-8 flex items-center justify-between pl-8 cursor-pointer rounded-r-full ${
-          selected
-            ? "text-slate-950 bg-[#DAFFFB] "
-            : "text-white border border-transparent  hover:bg-[#ffffff40]"
+        className={`h-16 m-1 rounded flex flex-col items-center justify-center cursor-pointer ${
+          selected ? `` : ` hover:bg-[#ffffff40]`
         }`}
       >
-        <div className="flex items-center gap-3">
+        <div
+          className={`flex flex-col items-center justify-center font-normal scale-90 text-xs gap-2 ${
+            selected ? "text-highlight" : "text-secondary"
+          }`}
+        >
           <div className="w-6 h-6">{icon}</div>
           {label}
         </div>
-        <div>
-          {selected && (
-            <div className="w-12 h-12 mr-2 animate-drawer-arrow-grow rounded-full bg-white flex items-center justify-center shadow-md">
-              <ArrowRightAlt />
-            </div>
-          )}
-        </div>
+        <div></div>
       </div>
     </>
   );

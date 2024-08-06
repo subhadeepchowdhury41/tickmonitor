@@ -20,10 +20,13 @@ export const PUT = async (
   { params }: { params: { id: string } }
 ) => {
   try {
+    const body = await req.json();
+    console.log(body);
     const response = await axios.put(
       `${process.env.NEXT_PUBLIC_API_URL}/tasks/${params.id}`,
-      await req.json()
+      body
     );
+    console.log(response.data);
     return NextResponse.json({ success: true, response: response.data });
   } catch (err) {
     return NextResponse.json({ success: false, error: err });

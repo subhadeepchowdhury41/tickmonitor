@@ -22,8 +22,7 @@ const Button = ({ variant = "contained", ...props }: ButtonProps) => {
 const ContainedButton = (props: ButtonProps) => {
   return (
     <button
-      {...props}
-      className={`w-full bg-slate-900 h-14 text-white font-bold rounded-md ${props.className}`}
+      className={`w-full bg-slate-900 h-12 text-white font-bold rounded-md ${props.className}`}
     >
       {props.label}
     </button>
@@ -32,7 +31,7 @@ const ContainedButton = (props: ButtonProps) => {
 
 const TextButton = (props: ButtonProps) => {
   return (
-    <button className={`text-sm font-[500] ${props.className}`} {...props}>
+    <button className={`text-sm font-[500] ${props.className}`}>
       {props.label}
     </button>
   );

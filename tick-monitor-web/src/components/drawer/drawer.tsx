@@ -10,6 +10,7 @@ import {
   Newspaper,
   Task,
 } from "@mui/icons-material";
+import { colorTheme } from "@/lib/utils/colors";
 
 const drawerItems = [
   { id: 0, label: "Dashboard", icon: <Dashboard /> },
@@ -24,13 +25,19 @@ const Drawer = () => {
   const [selectedItem, setSelectedItem] = useState(0);
   return (
     <>
-      <div className="w-[250px] bg-[#176B87]">
-        <div className="w-[100%] h-20 flex items-center justify-center font-bold text-2xl text-white bg-[#13495b]">
-          Tick Monitor
+      <div className={`w-[76px] bg-primary`}>
+        <div
+          className={`w-[100%] h-12 flex items-center justify-center font-bold text-2xl bg-primary text-neutral`}
+        >
+          T/M
         </div>
-        <div className="mt-4"/>
+        <div className="" />
         {drawerItems.map((item) => (
-          <div key={item.id} onClick={() => setSelectedItem(item.id)}>
+          <div
+            key={item.id}
+            onClick={() => setSelectedItem(item.id)}
+            className={item.id === selectedItem ? `` : ""}
+          >
             <DrawerItem
               icon={item.icon}
               label={item.label}

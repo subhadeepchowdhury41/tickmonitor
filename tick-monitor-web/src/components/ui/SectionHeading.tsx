@@ -17,7 +17,7 @@ const SectionHeading = ({
       <div className="flex font-bold items-center gap-1">
         {icon} {text}
       </div>
-      <LineBreak className="mt-1" />
+      <LineBreak className="mt-1 bg-secondary" />
     </div>
   );
 };

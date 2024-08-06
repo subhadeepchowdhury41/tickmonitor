@@ -5,10 +5,11 @@ import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
 import { Task } from "@/lib/types/task.type";
+import { Vertical } from "@/lib/types/vertical.type";
 
 interface TasksContextType {
-  myTasks: Task[];
-  tasksByMe: Task[];
+  myTasksFiltered: Task[];
+  tasksByMeFiltered: Task[];
   syncTasks: () => Promise<void>;
   createTask: ({
     title,
@@ -27,16 +28,41 @@ interface TasksContextType {
     dueTime: string;
     interval: Interval;
   }) => Promise<void>;
+  addFilter: (filter: Partial<FilterCriteria>) => void;
+  applySort: (sort: SortCriteria) => void;
 }
 
 const TasksContext = createContext<TasksContextType | null>(null);
 
 type Interval = "DAILY" | "WEEKLY" | "MONTHLY" | "ANNUAL";
+interface FilterCriteria {
+  title: string;
+  dueDate: string[];
+  verticals: string[];
+  status: string[];
+  urgency: string[];
+}
+
+type SortCriteria = { key: keyof Task; order: "asc" | "desc" };
 
 export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth();
   const [myTasks, setMyTasks] = useState<Task[]>([]);
   const [tasksByMe, setTasksByMe] = useState<Task[]>([]);
+  const [myTasksFiltered, setMyTasksFiltered] = useState<Task[]>([]);
+  const [tasksByMeFiltered, setTasksByMeFiltered] = useState<Task[]>([]);
+  const [filters, setFilters] = useState<FilterCriteria>({
+    title: "",
+    dueDate: ["All"],
+    status: ["All"],
+    urgency: ["All"],
+    verticals: ["All"],
+  });
+  const [sort, setSort] = useState<SortCriteria>({
+    key: "startDate",
+    order: "asc",
+  });
+
   const createTask = async ({
     title,
     description,
@@ -64,10 +90,12 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
         dueTime,
         interval,
       });
+      await syncTasks();
     } catch (err) {
       throw err;
     }
   };
+
   const getTasks = async () => {
     try {
       const response = await axios.get(`/api/users/${auth?.user.sub}/tasks/`);
@@ -76,12 +104,7 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
       console.error(err);
     }
   };
-  useEffect(() => {
-    console.log("SET_MY_TASKS: ", myTasks);
-  }, [myTasks]);
-  useEffect(() => {
-    console.log("SET_TASKS_BY_ME: ", tasksByMe);
-  }, [tasksByMe]);
+
   useEffect(() => {
     if (!auth?.user) return;
     getTasks().then((response) => {
@@ -89,15 +112,84 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
       setTasksByMe(response.assigns);
     });
   }, [auth?.user]);
+
   const syncTasks = async () => {
     getTasks().then((response) => {
       setMyTasks(response.assigned);
       setTasksByMe(response.assigns);
     });
   };
+
+  useEffect(() => {
+    if (!auth?.user) return;
+    applyFilters();
+  }, [myTasks, tasksByMe, filters]);
+
+  const applyFilters = () => {
+    let filteredTasks = myTasks;
+    Object.entries(filters).forEach(([key, value]) => {
+      console.log(key, value);
+      if (key === "title") {
+      } else {
+        filteredTasks = filteredTasks.filter((t) =>
+          key === "verticals"
+            ? value.includes(t["vertices"][0].name)
+            : value.includes(t[key as keyof Task])
+        );
+      }
+    });
+    let filteredTasksByMe = tasksByMe;
+    Object.entries(filters).forEach(([key, value]) => {
+      if (key === "title") {
+        return;
+      }
+      value.forEach((v: string) => {
+        if (v === "All") {
+        } else
+          filteredTasksByMe = filteredTasksByMe.filter((t) =>
+            key === "verticals"
+              ? value.includes(t.vertices[0].name)
+              : value.includes(t[key as keyof Task])
+          );
+      });
+    });
+    setMyTasksFiltered(filteredTasks);
+    setTasksByMeFiltered(filteredTasksByMe);
+  };
+
+  const addFilter = (filter: Partial<FilterCriteria>) => {
+    setFilters((prev) => {
+      prev = { ...prev, ...filter };
+      return prev;
+    });
+  };
+
+  const applySort = (sort: SortCriteria) => {
+    setSort(sort);
+    const sortedTasks = [...myTasksFiltered].sort((a, b) => {
+      if (a[sort.key] < b[sort.key]) return sort.order === "asc" ? -1 : 1;
+      if (a[sort.key] > b[sort.key]) return sort.order === "asc" ? 1 : -1;
+      return 0;
+    });
+    const sortedTasksByMe = [...tasksByMeFiltered].sort((a, b) => {
+      if (a[sort.key] < b[sort.key]) return sort.order === "asc" ? -1 : 1;
+      if (a[sort.key] > b[sort.key]) return sort.order === "asc" ? -1 : 1;
+      return 0;
+    });
+    setMyTasksFiltered(sortedTasks);
+    setTasksByMeFiltered(sortedTasksByMe);
+  };
+
   return (
     <TasksContext.Provider
-      value={{ createTask, myTasks, tasksByMe, syncTasks }}
+      value={{
+        createTask,
+        tasksByMeFiltered,
+        myTasksFiltered,
+        syncTasks,
+        addFilter,
+        applySort,
+      }}
     >
       {children}
     </TasksContext.Provider>

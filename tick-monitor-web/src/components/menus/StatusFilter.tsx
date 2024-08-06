@@ -1,6 +1,6 @@
 import { Check, Close, FilterAlt } from "@mui/icons-material";
 import { Menu, MenuItem } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface StatusFilterProps {
   anchRef: HTMLElement | null;
@@ -63,11 +63,15 @@ const StatusFilter = ({
       {options.map((option, index) => (
         <MenuItem
           onClick={() => {
+            let newFilters = filtered;
             if (filtered.includes(option)) {
-              setFiltered(filtered.filter((o) => o !== option));
-              return;
+              newFilters = newFilters.filter((o) => o !== option);
+              setFiltered(newFilters);
+            } else {
+              newFilters = [...newFilters, option];
             }
-            setFiltered((prev) => [...prev, options[index]]);
+            setFiltered(newFilters);
+            onChange(option, newFilters);
           }}
           key={index}
         >

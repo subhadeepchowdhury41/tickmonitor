@@ -21,15 +21,24 @@ import { S3Module } from './s3/s3.module';
 import { Domain } from './domain/entities/domain.entity';
 import { Role } from './roles/entity/roles.entity';
 import { TaskUser } from './tasks/entity/task-user.entity';
+import { readFileSync } from 'fs';
+
+const certificate = readFileSync('ca.pem');
+console.log(certificate);
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      username: 'postgres',
-      password: 'subha',
-      database: 'tickmonitor-db',
+      host: 'pg-274d10aa-subhadeepchowdhury41-0b7c.g.aivencloud.com',
+      username: 'avnadmin',
+      password: 'AVNS_DgzHCImZXXR0Or2xSE8',
+      database: 'defaultdb',
+      port: 17528,
+      ssl: {
+        rejectUnauthorized: true,
+        ca: certificate,
+      },
       entities: [
         User,
         Comment,
