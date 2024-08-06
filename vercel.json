@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "tick-monitor-common-backend/dist/main.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "tick-monitor-common-backend/dist/main.js"
+    }
+  ],
+  "files": ["tick-monitor-common-backend/ca.pem"]
+}
