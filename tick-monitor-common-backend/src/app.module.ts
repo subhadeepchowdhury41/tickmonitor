@@ -22,23 +22,42 @@ import { Domain } from './domain/entities/domain.entity';
 import { Role } from './roles/entity/roles.entity';
 import { TaskUser } from './tasks/entity/task-user.entity';
 import { readFileSync } from 'fs';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const certificate = readFileSync('ca.pem');
+
 console.log(certificate);
+
+// LOCAL
+const localDB = {
+  host: 'localhost',
+  username: 'postgres',
+  password: 'subha',
+  database: 'tickmonitor-db',
+};
+
+// HOST
+const hostedDB = {
+  host: 'pg-274d10aa-subhadeepchowdhury41-0b7c.g.aivencloud.com',
+  username: 'avnadmin',
+  password: 'AVNS_DgzHCImZXXR0Or2xSE8',
+  database: 'defaultdb',
+  port: 17528,
+  ssl: {
+    rejectUnauthorized: true,
+    ca: certificate,
+  },
+};
+
+const DBConfig = process.env.USE_LOCAL === 'true' ? localDB : hostedDB;
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'pg-274d10aa-subhadeepchowdhury41-0b7c.g.aivencloud.com',
-      username: 'avnadmin',
-      password: 'AVNS_DgzHCImZXXR0Or2xSE8',
-      database: 'defaultdb',
-      port: 17528,
-      ssl: {
-        rejectUnauthorized: true,
-        ca: certificate,
-      },
+      ...DBConfig,
       entities: [
         User,
         Comment,
