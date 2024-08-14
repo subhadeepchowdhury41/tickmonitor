@@ -1,3 +1,4 @@
+import { Attachment } from "./attachment.type";
 import { TaskUser } from "./task-user.type";
 import { User } from "./user.type";
 import { Vertical } from "./vertical.type";
@@ -13,4 +14,5 @@ export interface Task {
   status: string;
   urgency: string;
   vertices: Vertical[];
+  attatchments: Attachment[];
 }

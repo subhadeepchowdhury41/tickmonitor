@@ -4,31 +4,31 @@ import {
   Body,
   Param,
   Delete,
-  UseInterceptors,
   UploadedFiles,
 } from '@nestjs/common';
 import { AttatchmentsService } from './attatchments.service';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { S3Service } from 'src/s3/s3.service';
 
-@Controller('attatchments')
+@Controller('attachments')
 export class AttatchmentsController {
-  constructor(private readonly attatchmentsService: AttatchmentsService) {}
+  constructor(
+    private readonly attatchmentsService: AttatchmentsService,
+    private readonly s3Service: S3Service,
+  ) {}
 
   @Post()
-  @UseInterceptors(FilesInterceptor('files', 10))
   create(
     @UploadedFiles() files: Express.Multer.File[],
     @Body('userId') userId?: string,
     @Body('commentId') commentId?: string,
     @Body('taskId') taskId?: string,
-    @Body('name') name?: string,
   ) {
+    console.log(files);
     return this.attatchmentsService.create({
       files,
       userId,
       commentId,
       taskId,
-      name,
     });
   }
 

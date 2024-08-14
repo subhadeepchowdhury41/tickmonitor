@@ -3,6 +3,54 @@
 @tailwind utilities;
 
 /* Custom scrollbar styles applied globally */
+/* 
+@font-face {
+  font-family: "MonaSans";
+  src: url("/fonts/Mona Sans/TTF/MonaSans-Light.ttf") format("truetype");
+  font-weight: 100;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "MonaSans";
+  src: url("/fonts/Mona Sans/TTF/MonaSans-Light.ttf") format("truetype");
+  font-weight: 200;
+  font-style: normal;
+}
+@font-face {
+  font-family: "MonaSans";
+  src: url("/fonts/Mona Sans/TTF/MonaSans-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "MonaSans";
+  src: url("/fonts/Mona Sans/TTF/MonaSans-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "MonaSans";
+  src: url("/fonts/Mona Sans/TTF/MonaSans-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "MonaSans";
+  src: url("/fonts/Mona Sans/TTF/MonaSans-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Mona Sans";
+  src: url("/fonts/Mona Sans/TTF/MonaSans-ExtraBold.ttf") format("truetype");
+  font-weight: bolder;
+  font-style: normal;
+} */
 
 ::-webkit-scrollbar {
   position: absolute;

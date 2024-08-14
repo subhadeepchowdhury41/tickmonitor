@@ -10,11 +10,14 @@ import { ConfigModule } from '@nestjs/config';
 })
 export class S3Module implements NestModule {
   constructor(private readonly s3Service: S3Service) {}
-  configure = (consumer: MiddlewareConsumer) => {
+  configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(
-        multer({ storage: this.s3Service.getMulterS3() }).array('files', 10),
+        multer({
+          storage: this.s3Service.getMulterS3(),
+          limits: { fileSize: 100 * 1024 * 1024 },
+        }).array('files', 10),
       )
-      .forRoutes('/attatchments');
-  };
+      .forRoutes('/attachments');
+  }
 }

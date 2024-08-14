@@ -8,7 +8,6 @@ import TextInput from "@/components/ui/form/TextInput";
 import Button from "@/components/ui/form/Button";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import useSnackbar from "@/lib/hooks/useSnackbar";
 import LoginLoader from "@/components/loaders/login-loader";
 import { validateEmail } from "@/lib/utils/validators";
@@ -17,7 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 const Login = () => {
   const router = useRouter();
   const showSnackbar = useSnackbar();
-  const { signin } = useAuth();
+  const auth = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState({});
@@ -60,7 +59,8 @@ const Login = () => {
       return;
     }
 
-    await signin(email, password)
+    await auth
+      ?.signin(email, password)
       .then((res) => {
         const data = res.data;
         if (!data.success) {
@@ -104,7 +104,7 @@ const Login = () => {
             <div className="flex flex-col items-center">
               <Image className="w-[30%]" src={BgImage} alt="Signup-bg" />
               <div className="mt-8 text-xl text-center">
-                Welcome to{" "}
+                Welcome to
                 <div className="font-bold text-3xl">Tick Monitor</div>
               </div>
             </div>

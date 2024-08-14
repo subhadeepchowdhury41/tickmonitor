@@ -11,8 +11,5 @@ export class CreateAttatchmentDto {
   taskId?: string;
 
   @IsNotEmpty()
-  name: string;
-
-  @IsNotEmpty()
   commentId?: string;
 }

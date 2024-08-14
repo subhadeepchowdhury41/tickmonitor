@@ -45,6 +45,7 @@ export class TasksService {
         'comments',
         'comments.user',
         'attatchments',
+        'attatchments.user',
         'logs',
         'assignedUsers',
       ],
@@ -54,7 +55,13 @@ export class TasksService {
   findAll = async (userId?: string) => {
     if (!userId) {
       return await this.tasksRepository.find({
-        relations: ['comments', 'assignedUsers'],
+        relations: [
+          'comments',
+          'assignedUsers',
+          'vertices',
+          'attatchments',
+          'attatchments.user',
+        ],
       });
     }
     const assigned = await this.tasksRepository
@@ -65,6 +72,8 @@ export class TasksService {
       .leftJoinAndSelect('task.subTasks', 'subTasks')
       .leftJoinAndSelect('task.dependencies', 'dependencies')
       .leftJoinAndSelect('task.vertices', 'vertices')
+      .leftJoinAndSelect('task.attatchments', 'attatchments')
+      // .leftJoinAndSelect('attatchments.user', 'user')
       .where('user.id = :userId', { userId })
       .orWhere('assignedBy.id = :userId', { userId })
       .getMany();
@@ -77,6 +86,8 @@ export class TasksService {
         'assignedBy',
         'subTasks',
         'dependencies',
+        'attatchments',
+        'attatchments.user',
       ],
     });
     return { assigns, assigned };

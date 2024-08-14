@@ -9,7 +9,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import { useDomain } from "@/contexts/DomainContext";
 import { useTasks } from "@/contexts/TasksContext";
 import { colorTheme } from "@/lib/utils/colors";
-import { Add, List, MoreVert } from "@mui/icons-material";
+import { Add, AddBox, List, MoreVert } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -58,25 +58,42 @@ const Tasks = () => {
     <>
       <div
         style={{
-          height: "calc(100vh - 3rem)",
+          height: "calc(100vh - 4rem)",
         }}
         className={`flex-col flex`}
       >
         <div
-          className={`px-4 flex items-center justify-between text-2xl font-bold`}
-        ></div>
+          className={`px-4 h-12 pt-4 bg-white flex items-center text-2xl font-bold gap-1`}
+        >
+          Tasks
+          <IconButton size="small">
+            <AddBox className="text-gray-300" fontSize="medium" />
+          </IconButton>
+        </div>
+        <div
+          className={`px-4 pt-2 pb-2 bg-white flex items-center gap-2 text-xs`}
+        >
+          <div className="h-6 cursor-pointer hover:bg-slate-50 flex items-center justify-center px-4 rounded bg-slate-100 text-blue-800">
+            Board
+          </div>
+          <div className="h-6 cursor-pointer hover:bg-slate-50 flex items-center justify-center px-4 rounded ">
+            Timeline
+          </div>
+          <div className="h-6 cursor-pointer hover:bg-slate-50 flex items-center justify-center px-4 rounded ">
+            Activities
+          </div>
+        </div>
         <div
           className={`flex flex-col overflow-y-scroll`}
           style={{
             height: "calc(100vh - 2rem)",
           }}
         >
-          <SectionHeading text="Tasks" className="mx-4" />
           <div className="flex flex-col mx-4 mt-4">
             <div
               className={`rounded-md w-full flex font-bold text-xs px-4 justify-between`}
             >
-              <div className="w-[230px] flex items-center">
+              <div className="w-[200px] flex items-center">
                 <div>
                   <div className="">Title</div>
                 </div>
@@ -131,7 +148,7 @@ const Tasks = () => {
                   </div>
                 </div>
                 <div className="w-[180px] text-center">People</div>
-                <div className="w-[120px]">Actions</div>
+                <div className="w-[140px] text-center">Actions</div>
               </div>
             </div>
             <div className="mt-1">

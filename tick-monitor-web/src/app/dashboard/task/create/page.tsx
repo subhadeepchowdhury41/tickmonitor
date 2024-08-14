@@ -44,6 +44,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTasks } from "@/contexts/TasksContext";
 import { urgencies } from "@/lib/utils/consts";
+import { formatSizeInBytes } from "@/lib/utils/fileSize";
 
 type RecurralIntervalType = "daily" | "weekly" | "monthly" | "annual";
 
@@ -101,15 +102,6 @@ const CreateTask = () => {
         router.back();
       })
       .catch((err) => err);
-  };
-  const formatSizeInBytes = (size: number) => {
-    const sizes = ["Bytes", "KB", "MB"];
-    let i = 0;
-    while (size > 1024 && i < 3) {
-      size = size / 1024;
-      i++;
-    }
-    return `${size.toFixed(2)}${sizes[i]}`;
   };
   return (
     <>

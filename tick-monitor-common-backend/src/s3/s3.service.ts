@@ -10,25 +10,26 @@ export class S3Service {
     const useLocal = this.configService.get<boolean>('USE_LOCAL');
     this.s3 = new S3Client({
       credentials: {
-        accessKeyId: !useLocal
-          ? this.configService.get<string>('S3_ACCESS_KEY_ID')
+        accessKeyId: useLocal
+          ? this.configService.get<string>('S3_ACCESS_KEY')
           : 'test',
-        secretAccessKey: !useLocal
-          ? this.configService.get<string>('S3_SECRET_ACCESS_KEY')
+        secretAccessKey: useLocal
+          ? this.configService.get<string>('S3_SECRET_KEY')
           : 'test',
       },
-      endpoint: useLocal ? 'http://localhost:4566' : undefined,
+      // forcePathStyle: true,
+      endpoint: !useLocal ? 'http://localhost:4566' : undefined,
       region: this.configService.get<string>('AWS_REGION'),
     });
-    7;
   }
 
   getMulterS3 = () =>
     MulterS3({
       s3: this.s3,
       bucket: this.configService.get<string>('AWS_BUCKET_NAME'),
-      acl: 'public-red',
+      acl: 'public-read',
       metadata: (req, file, cb) => {
+        console.log(file);
         cb(null, { fieldName: file.fieldname, filename: file.filename });
       },
       key: (req, file, cb) => {

@@ -32,19 +32,20 @@ export class AttatchmentsService {
     return await this.attatchmentRepository.findOne({ where: { id: id } });
   };
   create = async (createAttatchmentDto: CreateAttatchmentDto) => {
-    const { userId, taskId, commentId, name, files } = createAttatchmentDto;
+    console.log(createAttatchmentDto.files.map((f) => f));
+    const { userId, taskId, commentId, files } = createAttatchmentDto;
     const user = await this.usersService.findById(userId);
     const task = await this.tasksService.findById(taskId);
     const comment = await this.commentsService.findById(commentId);
     const createdAttatchments: Attatchment[] = [];
-    files?.forEach(async (file) => {
+    files?.forEach(async (file: any) => {
       const createdAttatchment = this.attatchmentRepository.create({
         user,
         comment,
         task,
-        url: file.path,
-        name: name,
-        field: file.fieldname,
+        url: file.location,
+        name: file.originalname,
+        field: file.key,
       });
       createdAttatchments.push(
         await this.attatchmentRepository.save(createdAttatchment),

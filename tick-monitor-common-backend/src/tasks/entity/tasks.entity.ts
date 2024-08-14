@@ -11,6 +11,8 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { TaskUser } from './task-user.entity';
 
@@ -125,7 +127,18 @@ export class Task {
   })
   logs: Tasklog[];
 
-  @OneToMany(() => Vertex, (vertices) => vertices.task)
+  @ManyToMany(() => Vertex, (vertices) => vertices.task)
+  @JoinTable({
+    name: 'task-vertex',
+    joinColumn: {
+      referencedColumnName: 'id',
+      name: 'taskId',
+    },
+    inverseJoinColumn: {
+      referencedColumnName: 'id',
+      name: 'vertexId',
+    },
+  })
   vertices: Vertex[];
 
   @CreateDateColumn()
