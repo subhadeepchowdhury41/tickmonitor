@@ -20,7 +20,7 @@ export const GET = async (
 ) => {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/tasks?userId=${params.userId}`
+      `${process.env.NEXT_PUBLIC_API_URL}/tasks?userId=${params.userId}&level=0`
     );
     console.log(response.data);
     return NextResponse.json({ success: true, response: response.data });

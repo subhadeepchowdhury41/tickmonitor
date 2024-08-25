@@ -7,10 +7,13 @@ import {
   Attachment,
   Cancel,
   Comment as CommentIcon,
+  Delete,
   Download,
   History,
   InfoOutlined,
   KeyboardArrowDown,
+  KeyboardArrowUp,
+  MoreVert,
   Send,
   Upload,
 } from "@mui/icons-material";
@@ -23,6 +26,8 @@ import {
   DialogTitle,
   Drawer,
   IconButton,
+  Menu,
+  MenuItem,
   Tooltip,
 } from "@mui/material";
 import { Task } from "@/lib/types/task.type";
@@ -36,6 +41,8 @@ import Comments from "./Comments";
 import DateInput from "../ui/form/DateInput";
 import { TaskUser } from "@/lib/types/task-user.type";
 import { formatSizeInBytes } from "@/lib/utils/fileSize";
+import SubtaskList from "./SubtaskList";
+import CreateSubTaskCard from "./CreateSubTaskCard";
 
 const TaskRow = ({ t }: { t: Task }) => {
   const auth = useAuth();
@@ -43,6 +50,8 @@ const TaskRow = ({ t }: { t: Task }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [expandPeople, setExpandPeople] = useState(false);
   const [expandSubs, setExpandSubs] = useState(false);
+  const [expandSubTasks, setExpandSubTasks] = useState(false);
+  const [showMoreEl, setShowMoreEl] = useState<HTMLElement | null>(null);
   const [statusChangeConfirmation, setStatusChangeConfirmation] =
     useState(false);
   const [statusChangeTo, setStatusChangeTo] = useState<string>("");
@@ -66,8 +75,22 @@ const TaskRow = ({ t }: { t: Task }) => {
   const handleSubAdd = () => {
     setExpandSubs((prev) => !prev);
   };
+  const handleAdd = async () => {
+    await tasks?.syncTasks();
+    handleSubAdd();
+    handleSubTaskList();
+  };
+  const handleSubTaskList = () => {
+    setExpandSubTasks((prev) => !prev);
+  };
   const handleOpen = () => {
     setShowDetails(true);
+  };
+  const handleMorePress = (e: any) => {
+    setShowMoreEl(e as HTMLElement);
+  };
+  const handleMoreClose = () => {
+    setShowMoreEl(null);
   };
   const handleClose = () => {
     setShowDetails(false);
@@ -117,12 +140,21 @@ const TaskRow = ({ t }: { t: Task }) => {
     });
     formData.append("userId", auth?.user.sub);
     formData.append("taskId", t.id);
-    const res = await axios.post(
-      `/api/attachments`,
-      formData
-    );
+    const res = await axios.post(`/api/attachments`, formData);
     console.log(res.data);
     tasks?.syncTasks();
+  };
+  const deleteAttachment = async (id: string) => {
+    await axios.delete(`/api/attachments/${id}`).then((res) => {
+      console.log(res.data);
+      tasks?.syncTasks();
+    });
+  };
+  const deleteTask = async () => {
+    await axios.delete(`/api/tasks/${t.id}`).then((res) => {
+      console.log(res.data);
+      tasks?.syncTasks();
+    });
   };
   useEffect(() => {
     if (showDetails) {
@@ -164,7 +196,16 @@ const TaskRow = ({ t }: { t: Task }) => {
     [t]
   );
   return (
-    <div className={`bg-neutral flex w-full flex-col justify-center px-4 `}>
+    <div className={`bg-white flex w-full flex-col justify-center px-4 `}>
+      <Menu
+        open={Boolean(showMoreEl)}
+        anchorEl={showMoreEl}
+        onClose={handleMoreClose}
+      >
+        <MenuItem onClick={deleteTask} className="font-xs flex items-center gap-2">
+          <Delete color="error" fontSize="small" /> Delete
+        </MenuItem>
+      </Menu>
       {/* :Dialog */}
       <Dialog
         open={statusChangeConfirmation}
@@ -198,38 +239,35 @@ const TaskRow = ({ t }: { t: Task }) => {
       {/* :Drawer */}
       <Drawer anchor="right" open={showDetails} onClose={handleClose}>
         <div className="h-screen flex flex-col w-[540px]">
-          {/* <SectionHeading
-            text="Task Details"
-            style={{
-              backgroundColor: urgencies.filter((u) => u.value === t.urgency)[0]
-                .color.backgroundColor,
-              color: urgencies.filter((u) => u.value === t.urgency)[0].color
-                .color,
-              margin: "0 0",
-            }}
-            className=" px-2 pt-4"
-            icon={<InfoOutlined fontSize="small" />}
-          /> */}
           <div className="flex mt-4 items-center rounded-lg mx-2">
-            <div className="text-2xl flex flex-wrap gap-2 items-center font-bold px-2 py-2 text-wrap break-words">
-              {t.title}
-              <div className="flex items-center scale-90">
-                <div
-                  className="text-xs font-light items-center gap-1 h-6 px-2 flex justify-center rounded-md"
-                  style={{
-                    ...urgencies.filter((u) => u.value === t.urgency)[0].color,
-                    borderColor: urgencies.filter(
-                      (u) => u.value === t.urgency
-                    )[0].color.color,
-                    borderWidth: "1px",
-                  }}
-                >
-                  {/* <div className="scale-75">
+            <div className="flex justify-between w-full items-center">
+              <div className="text-2xl flex flex-wrap gap-2 items-center font-bold px-2 py-2 text-wrap break-words">
+                {t.title}
+                <div className="flex items-center scale-90">
+                  <div
+                    className="text-xs font-light items-center gap-1 h-6 px-2 flex justify-center rounded-md"
+                    style={{
+                      ...urgencies.filter((u) => u.value === t.urgency)[0]
+                        .color,
+                      borderColor: urgencies.filter(
+                        (u) => u.value === t.urgency
+                      )[0].color.color,
+                      borderWidth: "1px",
+                    }}
+                  >
+                    {/* <div className="scale-75">
                     {urgencies.filter((u) => u.value === t.urgency)[0].icon}
                   </div> */}
-                  {urgencies.filter((u) => u.value === t.urgency)[0].label}
+                    {urgencies.filter((u) => u.value === t.urgency)[0].label}
+                  </div>
                 </div>
               </div>
+              <IconButton
+                size="small"
+                onClick={(e) => handleMorePress(e.target)}
+              >
+                <MoreVert fontSize="small" />
+              </IconButton>
             </div>
           </div>
 
@@ -544,7 +582,7 @@ const TaskRow = ({ t }: { t: Task }) => {
 
         <div className="flex items-center">
           {/* :Col2 */}
-          <div className="w-[130px] font-[500] text-slate-500 text-xs">
+          <div className="w-[145px] font-[500] text-slate-500 text-xs">
             {new Date(t.dueDate).toLocaleDateString("en-US", {
               year: "numeric",
               month: "long",
@@ -569,9 +607,24 @@ const TaskRow = ({ t }: { t: Task }) => {
           {/* :Col4 */}
           <div className="w-[120px] flex items-center">
             <div
-              className={`font-normal capitalize flex items-center justify-center h-7 w-24 text-[12px] rounded-md border border-slate-600`}
+              className={`font-normal relative capitalize flex items-center justify-center h-7 w-24 text-[12px] rounded-md border border-slate-600`}
             >
-              {t.status.replace("_", " ")}
+              {t.status === "in_progress" && t.subTasks.length !== 0 ? (
+                <div
+                  className={`absolute left-0 w-[${
+                    (t.subTasks.filter((s) => s.status === "completed").length *
+                      100) /
+                    t.subTasks.length
+                  }%] rounded-l-md h-7 bg-slate-600 opacity-20 z-100`}
+                ></div>
+              ) : null}
+              {t.status === "in_progress" && t.subTasks.length !== 0
+                ? `${
+                    (t.subTasks.filter((s) => s.status === "completed").length *
+                      100) /
+                    t.subTasks.length
+                  }%`
+                : t.status.replace("_", " ")}
             </div>
           </div>
           <div className="w-[120px] flex">
@@ -630,135 +683,18 @@ const TaskRow = ({ t }: { t: Task }) => {
             <IconButton onClick={handleOpen}>
               <InfoOutlined sx={{ color: "#1e293b" }} />
             </IconButton>
-            <IconButton sx={{ color: "#1e293b" }}>
-              <KeyboardArrowDown />
+            <IconButton onClick={handleSubTaskList} sx={{ color: "#1e293b" }}>
+              {expandSubTasks ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
             </IconButton>
           </div>
         </div>
       </div>
 
       {/* :Subtasks */}
-      {expandSubs && <CreateSubTaskCard t={t} />}
-    </div>
-  );
-};
+      {expandSubs && <CreateSubTaskCard t={t} onAdd={handleAdd} />}
+      {expandSubTasks && <SubtaskList t={t} />}
 
-const CreateSubTaskCard = ({ t }: { t: Task }) => {
-  const [startDate, setStartDate] = useState<string>(() => {
-    const today = new Date(t.startDate);
-    const year = today.getFullYear();
-    const month = `0${today.getMonth() + 1}`.slice(-2);
-    const day = `0${today.getDate()}`.slice(-2);
-    return `${year}-${month}-${day}`;
-  });
-  const [dueDate, setDueDate] = useState<string>(() => {
-    const today = new Date(t.dueDate);
-    const year = today.getFullYear();
-    const month = `0${today.getMonth() + 1}`.slice(-2);
-    const day = `0${today.getDate()}`.slice(-2);
-    return `${year}-${month}-${day}`;
-  });
-  const [urgency, setUrgency] = useState<string>("normal");
-  const [people, setPeople] = useState<TaskUser[]>([]);
-  const handleUrgencyClick = (urg: string) => {
-    setUrgency(urg);
-  };
-  const handleClick = (id: string) => {
-    setPeople((prev) =>
-      prev.map((p) => p.id).includes(id)
-        ? prev.filter((p) => p.id !== id)
-        : [...prev, t.assignedUsers.find((t) => t.id === id)!]
-    );
-  };
-  return (
-    <div className="w-full flex flex-col border-l border-primary mb-4 px-4">
-      <div className="flex gap-2">
-        <TextInput
-          label="Title"
-          hint="Enter Title"
-          className="border-white border-b-disabled rounded-none"
-        />
-        <TextInput
-          label="Description"
-          hint="Enter Description"
-          className="border-white border-b-disabled rounded-none"
-        />
-      </div>
-      <div className="flex gap-2">
-        <DateInput
-          label="Start Date"
-          hint="Enter Title"
-          className="border-white border-b-disabled rounded-none"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-        />
-        <DateInput
-          label="Due Date"
-          hint="Enter Description"
-          className="border-white border-b-disabled rounded-none"
-          value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
-        />
-      </div>
-      <div className="flex gap-2 mt-4">
-        <div className="flex my-2 w-1/2">
-          <div className="flex flex-wrap gap-2">
-            {t.assignedUsers.map((tUser, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-2 bg-slate-200 rounded cursor-pointer h-12 px-2"
-                onClick={() => handleClick(tUser.id)}
-              >
-                <Checkbox
-                  size="small"
-                  checked={people.map((p) => p.id).includes(tUser.id)}
-                  color="success"
-                  className=""
-                />
-                <div className="flex flex-col ">
-                  <div className="text-primary font-[500] text-sm">
-                    {tUser.user.name}
-                  </div>
-                  <div className="text-gray-600 font-light text-xs">
-                    {tUser.user.email}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="flex w-[1/2] gap-2 items-center">
-          {urgencies.map((urg, i) => (
-            <div
-              key={i}
-              className="text-xs font-light items-center gap-1 h-12 w-24 flex justify-center rounded-md cursor-pointer"
-              style={{
-                color: urg.color.color,
-                border: "1px solid",
-                borderColor:
-                  urg.value === urgency
-                    ? urg.color.color
-                    : urg.color.backgroundColor,
-                backgroundColor:
-                  urg.value === urgency ? urg.color.backgroundColor : undefined,
-              }}
-              onClick={() => handleUrgencyClick(urg.value)}
-            >
-              <div>{}</div>
-              <div className="scale-75">{urg.icon}</div>
-              {urg.label}
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="flex w-full justify-end gap-4 my-2">
-        <div className="h-10 flex-grow bg-bg rounded text-primary font-[500] flex items-center text-sm cursor-pointer justify-center">
-          Cancel
-        </div>
-        <div className="h-10 flex-grow bg-primary rounded text-white font-[500] flex items-center text-sm cursor-pointer justify-center">
-          Submit
-        </div>
-      </div>
+      <div className="border-b  "></div>
     </div>
   );
 };

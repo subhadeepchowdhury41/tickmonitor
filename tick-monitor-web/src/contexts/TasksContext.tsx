@@ -98,7 +98,9 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
 
   const getTasks = async () => {
     try {
-      const response = await axios.get(`/api/users/${auth?.user.sub}/tasks/`);
+      const response = await axios.get(
+        `/api/users/${auth?.user.sub}/tasks`
+      );
       return response.data.response;
     } catch (err) {
       console.error(err);

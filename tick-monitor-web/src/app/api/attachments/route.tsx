@@ -1,6 +1,5 @@
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
-import formidable from "formidable";
 
 export const config = {
   api: {
@@ -20,3 +19,4 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json({ success: false, error: err });
   }
 };
+

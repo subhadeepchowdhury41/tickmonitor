@@ -18,12 +18,6 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   validate(payload: any) {
-    console.log('========> ', {
-      ...payload,
-      initiated: new Date(payload.iat!).toLocaleTimeString(),
-      expiry: new Date(payload.exp!).toLocaleTimeString(),
-      diff: new Date(payload.exp!).toLocaleTimeString(),
-    });
     return payload;
   }
 }

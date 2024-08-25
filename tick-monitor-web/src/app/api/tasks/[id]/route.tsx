@@ -32,3 +32,17 @@ export const PUT = async (
     return NextResponse.json({ success: false, error: err });
   }
 };
+
+export const DELETE = async (
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) => {
+  try {
+    const response = await axios.delete(
+      `${process.env.NEXT_PUBLIC_API_URL}/tasks/${params.id}`
+    );
+    return NextResponse.json({ success: true, response: response.data });
+  } catch (err) {
+    return NextResponse.json({ success: false, error: err });
+  }
+};

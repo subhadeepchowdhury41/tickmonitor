@@ -179,8 +179,8 @@ const AutofillInput = <T,>({
       {focused && filteredOptions.length > 0 && selected.length < maxItems && (
         <div
           style={{
-            top: `${(containerDimensions?.top ?? 0) + 60}px`,
-            width: `${containerDimensions?.width}px`,
+            top: `${(containerDimensions?.top ?? 0) - 80}px`,
+            width: `${containerDimensions?.width ?? 0 - 48}px`,
           }}
           className={`absolute animate-dropdown-appear-grow shadow-xl border border-slate-400 rounded-md z-50`}
         >

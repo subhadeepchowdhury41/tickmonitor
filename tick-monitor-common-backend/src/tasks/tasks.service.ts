@@ -41,20 +41,28 @@ export class TasksService {
       where: { id: id },
       relations: [
         'subTasks',
+        'subTasks.assignedBy',
+        'subTasks.assignedUsers',
+        'subTasks.assignedUsers.user',
+        'subTasks.vertices',
         'dependencies',
         'comments',
         'comments.user',
         'attatchments',
         'attatchments.user',
         'logs',
+        'assignedBy',
         'assignedUsers',
+        'assignedUsers.user',
+        'vertices',
       ],
     });
   };
 
-  findAll = async (userId?: string) => {
+  findAll = async (userId?: string, level?: number) => {
     if (!userId) {
       return await this.tasksRepository.find({
+        where: { level: level },
         relations: [
           'comments',
           'assignedUsers',
@@ -64,21 +72,43 @@ export class TasksService {
         ],
       });
     }
-    const assigned = await this.tasksRepository
-      .createQueryBuilder('task')
-      .leftJoinAndSelect('task.assignedUsers', 'taskUser')
-      .leftJoinAndSelect('taskUser.user', 'user')
-      .leftJoinAndSelect('task.assignedBy', 'assignedBy')
-      .leftJoinAndSelect('task.subTasks', 'subTasks')
-      .leftJoinAndSelect('task.dependencies', 'dependencies')
-      .leftJoinAndSelect('task.vertices', 'vertices')
-      .leftJoinAndSelect('task.attatchments', 'attatchments')
-      // .leftJoinAndSelect('attatchments.user', 'user')
-      .where('user.id = :userId', { userId })
-      .orWhere('assignedBy.id = :userId', { userId })
-      .getMany();
+    // const assigned = await this.tasksRepository
+    //   .createQueryBuilder('task')
+    //   .leftJoinAndSelect('task.assignedUsers', 'taskUser')
+    //   .leftJoinAndSelect('taskUser.user', 'user')
+    //   .leftJoinAndSelect('task.assignedBy', 'assignedBy')
+    //   .leftJoinAndSelect('task.subTasks', 'subTasks')
+    //   .leftJoinAndSelect('task.dependencies', 'dependencies')
+    //   .leftJoinAndSelect('task.vertices', 'vertices')
+    //   .leftJoinAndSelect('task.attatchments', 'attatchments')
+    //   .where('user.id = :userId', { userId })
+    //   .orWhere('assignedBy.id = :userId', { userId })
+    //   .getMany();
+
+    const assigned = await this.taskUserRepository.find({
+      where: { user: { id: userId }, task: { level: level } },
+      relations: [
+        'task',
+        'task.assignedBy',
+        'task.assignedUsers',
+        'task.vertices',
+        'task.subTasks.assignedUsers',
+        'task.subTasks.assignedBy',
+        'task.subTasks.vertices',
+      ],
+    });
+
+    // const assigned = await this.taskUserRepository
+    //   .createQueryBuilder('taskUser')
+    //   .leftJoinAndSelect('taskUser.task', 'task')
+    //   .leftJoinAndSelect('task.subTasks', 'subTask')
+    //   .leftJoinAndSelect('subTask.assignedUsers', 'subTaskAssignedUsers')
+    //   .leftJoinAndSelect('subTask.assignedBy', 'subTaskAssignedBy')
+    //   .where('taskUser.user.id = :userId', { userId })
+    //   .getMany();
+
     const assigns = await this.tasksRepository.find({
-      where: { assignedBy: { id: userId } },
+      where: { assignedBy: { id: userId }, level: level },
       relations: [
         'assignedUsers',
         'assignedUsers.user',
@@ -145,6 +175,18 @@ export class TasksService {
         throw new NotFoundException('Task not found');
       }
       return await this.tasksRepository.update(id, updateTaskDto);
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  delete = async (id: string) => {
+    try {
+      const task = await this.tasksRepository.findOne({
+        where: { id: id },
+      });
+      console.log(task);
+      return await this.tasksRepository.delete(id);
     } catch (err) {
       throw err;
     }

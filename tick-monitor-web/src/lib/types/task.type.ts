@@ -15,4 +15,5 @@ export interface Task {
   urgency: string;
   vertices: Vertical[];
   attatchments: Attachment[];
+  subTasks: Task[];
 }
