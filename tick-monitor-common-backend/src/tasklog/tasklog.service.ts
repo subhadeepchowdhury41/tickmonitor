@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTasklogDto } from './dto/create-tasklog.dto';
 import { Repository } from 'typeorm';
 import { Tasklog } from './entities/tasklog.entity';
@@ -21,6 +26,12 @@ export class TasklogService {
     const { taskId, userId } = createTasklogDto;
     const task = await this.taskService.findById(taskId);
     const user = await this.userService.findById(userId);
+    if (!task) {
+      throw new NotFoundException('Task not found!');
+    }
+    if (!user) {
+      throw new NotFoundException('User not found!');
+    }
     const log = this.tasklogRepo.create({
       ...createTasklogDto,
       task,

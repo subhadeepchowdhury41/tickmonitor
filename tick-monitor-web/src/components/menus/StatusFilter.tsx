@@ -52,7 +52,9 @@ const StatusFilter = ({
             <div
               className="cursor-pointer"
               onClick={() => {
-                setFiltered(filtered.filter((o) => o !== option));
+                const filters = filtered.filter((o) => o !== option);
+                setFiltered(filters);
+                onChange('', filters);
               }}
             >
               <Close fontSize="small" />
@@ -69,8 +71,8 @@ const StatusFilter = ({
               setFiltered(newFilters);
             } else {
               newFilters = [...newFilters, option];
+              setFiltered(newFilters);
             }
-            setFiltered(newFilters);
             onChange(option, newFilters);
           }}
           key={index}

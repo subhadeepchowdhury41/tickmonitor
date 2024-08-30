@@ -53,7 +53,9 @@ const UrgencyFilter = ({
             <div
               className="cursor-pointer"
               onClick={() => {
-                setFiltered(filtered.filter((o) => o !== option));
+                const filters = filtered.filter((o) => o !== option);
+                setFiltered(filters);
+                onChange("", filters);
               }}
             >
               <Close fontSize="small" />

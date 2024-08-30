@@ -98,9 +98,7 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
 
   const getTasks = async () => {
     try {
-      const response = await axios.get(
-        `/api/users/${auth?.user.sub}/tasks`
-      );
+      const response = await axios.get(`/api/users/${auth?.user.sub}/tasks`);
       return response.data.response;
     } catch (err) {
       console.error(err);
@@ -133,11 +131,18 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
       console.log(key, value);
       if (key === "title") {
       } else {
-        filteredTasks = filteredTasks.filter((t) =>
-          key === "verticals"
-            ? value.includes(t["vertices"][0].name)
-            : value.includes(t[key as keyof Task])
-        );
+        filteredTasks = filteredTasks.filter((t) => {
+          if (key === "verticals") {
+            return value.includes(t["vertices"][0].name);
+          }
+          if (key === "dueDate") {
+            const date = new Date(t[key as keyof Task] as string);
+            return value.includes(
+              `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDay()}`
+            );
+          }
+          return value.includes(t[key as keyof Task]);
+        });
       }
     });
     let filteredTasksByMe = tasksByMe;
@@ -148,11 +153,26 @@ export const TasksProvider = ({ children }: { children: React.ReactNode }) => {
       value.forEach((v: string) => {
         if (v === "All") {
         } else
-          filteredTasksByMe = filteredTasksByMe.filter((t) =>
-            key === "verticals"
-              ? value.includes(t.vertices[0].name)
-              : value.includes(t[key as keyof Task])
-          );
+          filteredTasksByMe = filteredTasksByMe.filter((t) => {
+            if (key === "verticals") {
+              return value.includes(t["vertices"][0].name);
+            }
+            if (key === "dueDate") {
+              const date = new Date(t[key as keyof Task] as string);
+              console.log(
+                `${date.getFullYear()}-${`0${date.getMonth() + 1}`.slice(
+                  -2
+                )}-${`0${date.getDate()}`.slice(-2)}`
+              );
+
+              return value.includes(
+                `${date.getFullYear()}-${`0${date.getMonth() + 1}`.slice(
+                  -2
+                )}-${`0${date.getDate()}`.slice(-2)}`
+              );
+            }
+            return value.includes(t[key as keyof Task]);
+          });
       });
     });
     setMyTasksFiltered(filteredTasks);

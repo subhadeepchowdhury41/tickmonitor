@@ -19,8 +19,9 @@ const DateFilter = ({ anchRef, onChange, onClose }: DateFilterProps) => {
     if (filtered.includes(date)) {
       return;
     }
-    setFiltered([...filtered, date]);
-    onChange(date, filtered);
+    const filters = [...filtered, date];
+    setFiltered(filters);
+    onChange(date, filters);
   };
   return (
     <Menu
@@ -53,7 +54,9 @@ const DateFilter = ({ anchRef, onChange, onClose }: DateFilterProps) => {
             <div
               className="cursor-pointer"
               onClick={() => {
-                setFiltered(filtered.filter((o) => o !== option));
+                const filters = filtered.filter((o) => o !== option);
+                setFiltered(filters);
+                onChange(date, filters);
               }}
             >
               <Close fontSize="small" />

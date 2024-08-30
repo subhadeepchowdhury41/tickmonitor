@@ -28,6 +28,9 @@ export class Tasklog {
   @Column()
   status: string;
 
-  @Column()
+  @Column({ nullable: true })
   description: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

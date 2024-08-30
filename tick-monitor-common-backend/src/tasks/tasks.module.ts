@@ -8,6 +8,7 @@ import { CommentsModule } from 'src/comments/comments.module';
 import { AttatchmentsModule } from 'src/attatchments/attatchments.module';
 import { VerticesModule } from 'src/vertices/vertices.module';
 import { TaskUser } from './entity/task-user.entity';
+import { TasklogModule } from 'src/tasklog/tasklog.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { TaskUser } from './entity/task-user.entity';
     forwardRef(() => CommentsModule),
     forwardRef(() => AttatchmentsModule),
     forwardRef(() => VerticesModule),
+    forwardRef(() => TasklogModule),
   ],
   providers: [TasksService],
   controllers: [TasksController],

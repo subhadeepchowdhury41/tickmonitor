@@ -14,6 +14,7 @@ import { AttatchmentsService } from 'src/attatchments/attatchments.service';
 import { VerticesService } from 'src/vertices/vertices.service';
 import { TaskUser } from './entity/task-user.entity';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { TasklogService } from 'src/tasklog/tasklog.service';
 
 @Injectable()
 export class TasksService {
@@ -30,6 +31,8 @@ export class TasksService {
     private readonly attatchmentService: AttatchmentsService,
     @Inject(forwardRef(() => VerticesService))
     private readonly vertexService: VerticesService,
+    @Inject(forwardRef(() => TasklogService))
+    private readonly tasklogService: TasklogService,
   ) {}
 
   findById = async (id: string): Promise<Task> => {
@@ -51,6 +54,7 @@ export class TasksService {
         'attatchments',
         'attatchments.user',
         'logs',
+        'logs.user',
         'assignedBy',
         'assignedUsers',
         'assignedUsers.user',
@@ -174,7 +178,18 @@ export class TasksService {
       if (!task) {
         throw new NotFoundException('Task not found');
       }
-      return await this.tasksRepository.update(id, updateTaskDto);
+      const { userId, remarks, ...updates } = updateTaskDto;
+      const updatedTask = await this.tasksRepository.update(id, updates);
+      console.log('USER_ID', userId);
+      if (updateTaskDto.status) {
+        await this.tasklogService.create({
+          status: updateTaskDto.status,
+          userId: userId,
+          taskId: id,
+          title: remarks,
+        });
+      }
+      return updatedTask;
     } catch (err) {
       throw err;
     }

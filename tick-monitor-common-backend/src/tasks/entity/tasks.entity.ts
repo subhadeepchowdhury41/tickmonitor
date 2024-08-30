@@ -127,7 +127,10 @@ export class Task {
   })
   logs: Tasklog[];
 
-  @ManyToMany(() => Vertex, (vertices) => vertices.task)
+  @ManyToMany(() => Vertex, (vertices) => vertices.task, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @JoinTable({
     name: 'task-vertex',
     joinColumn: {

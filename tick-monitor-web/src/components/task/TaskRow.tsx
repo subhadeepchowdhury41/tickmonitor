@@ -43,6 +43,7 @@ import { TaskUser } from "@/lib/types/task-user.type";
 import { formatSizeInBytes } from "@/lib/utils/fileSize";
 import SubtaskList from "./SubtaskList";
 import CreateSubTaskCard from "./CreateSubTaskCard";
+import { Tasklog } from "@/lib/types/task-log.type";
 
 const TaskRow = ({ t }: { t: Task }) => {
   const auth = useAuth();
@@ -58,6 +59,7 @@ const TaskRow = ({ t }: { t: Task }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [curComment, setCurrComment] = useState<string>("");
   const [attatchments, setAttatchments] = useState([]);
+  const [logs, setLogs] = useState<Tasklog[]>([]);
   const [selectedTab, setSelectedTab] = useState(0);
   const [files, setFiles] = useState<File[]>([]);
   const sendComment = async () => {
@@ -111,18 +113,22 @@ const TaskRow = ({ t }: { t: Task }) => {
       console.log("SET_COMMENTS: ", res.data.response.comments);
       setComments(res.data.response.comments);
       setAttatchments(res.data.response.attatchments);
+      setLogs(res.data.response.logs);
     });
   };
   const submitStatusChange = async () => {
     await axios
       .put(`/api/tasks/${t.id}`, {
         status: statusChangeTo.replace(" ", "_").toLowerCase(),
+        userId: auth?.user.sub,
+        remarks: "",
       })
       .then(async (res) => {
         console.log(res.data);
         if (res.data.success) {
           setStatusChangeConfirmation(false);
           await tasks?.syncTasks();
+          await fetchDetails();
         }
       })
       .catch((err) => {
@@ -202,7 +208,10 @@ const TaskRow = ({ t }: { t: Task }) => {
         anchorEl={showMoreEl}
         onClose={handleMoreClose}
       >
-        <MenuItem onClick={deleteTask} className="font-xs flex items-center gap-2">
+        <MenuItem
+          onClick={deleteTask}
+          className="font-xs flex items-center gap-2"
+        >
           <Delete color="error" fontSize="small" /> Delete
         </MenuItem>
       </Menu>
@@ -482,6 +491,38 @@ const TaskRow = ({ t }: { t: Task }) => {
               ))}
             </div>
           ) : null}
+          {/* :Logs */}
+          {selectedTab === 3 ? (
+            <div className="flex flex-col justify-start">
+              {logs.map((l, i) => {
+                return (
+                  <div
+                    key={i}
+                    className="text-xs h-12 bg-slate-100 rounded mt-2 mx-4 px-2 flex items-center justify-between"
+                  >
+                    <div className="flex">
+                      <div className="text-xs font-bold w-[90px] capitalize text-center">
+                        {String(l.status).replace("_", " ")}
+                      </div>
+                      <div className="font-[500] text-slate-800 border-l border-slate-400 ml-2 pl-2">
+                        {l.user.name}
+                      </div>
+                    </div>
+                    <div className="text-slate-400 font-[400]">
+                      {new Date(l.createdAt).toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
         {selectedTab === 2 ? (
           <div className="absolute flex flex-col bg-white border w-[540px] bottom-0">
@@ -548,7 +589,6 @@ const TaskRow = ({ t }: { t: Task }) => {
             </div>
           </div>
         ) : null}
-
         {/* :CommentInput */}
         {selectedTab === 1 ? (
           <div className="absolute bg-white border w-[540px] bottom-0">
@@ -694,7 +734,7 @@ const TaskRow = ({ t }: { t: Task }) => {
       {expandSubs && <CreateSubTaskCard t={t} onAdd={handleAdd} />}
       {expandSubTasks && <SubtaskList t={t} />}
 
-      <div className="border-b  "></div>
+      <div className="border-b"></div>
     </div>
   );
 };

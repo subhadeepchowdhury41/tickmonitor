@@ -20,7 +20,9 @@ export class Attatchment {
   @ManyToOne(() => User, (user) => user.attatchments)
   user: User;
 
-  @ManyToOne(() => Task, (task) => task.attatchments)
+  @ManyToOne(() => Task, (task) => task.attatchments, {
+    onDelete: 'CASCADE',
+  })
   task: Task;
 
   @ManyToOne(() => Comment, (comment) => comment.attatchments)

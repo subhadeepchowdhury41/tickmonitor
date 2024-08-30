@@ -9,4 +9,6 @@ export class UpdateTaskDto extends CreateTaskDto {
   parentTaskId?: null;
   dependencyOf?: null;
   status: string;
+  userId: string;
+  remarks: string;
 }
