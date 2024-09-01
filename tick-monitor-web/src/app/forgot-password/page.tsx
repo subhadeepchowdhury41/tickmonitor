@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import AbLogo from "@/assets/logos/abirla.png";
+import AbLogo from "@/assets/logos/tickmonitor.png";
 import BgImage from "@/assets/images/bg.png";
 import TextInput from "@/components/ui/form/TextInput";
 import { useState } from "react";
