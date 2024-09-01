@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import AbLogo from "@/assets/logos/abirla.png";
+import TmLogo from "@/assets/logos/tickmonitor.png";
 import BgImage from "@/assets/images/bg.png";
 import TickMGif from "@/assets/gifs/tickmonitor.gif";
 import TextInput from "@/components/ui/form/TextInput";
@@ -95,8 +95,8 @@ const Login = () => {
         <div className="p-4 flex flex-col items-center justify-bewteen flex-grow">
           <div className="w-full">
             <Image
-              className="w-[20%] self-start justify-self-start animate-login-form-slide"
-              src={AbLogo}
+              className="w-[17%] self-start justify-self-start animate-login-form-slide"
+              src={TmLogo}
               alt="Ab-logo"
             />
           </div>
