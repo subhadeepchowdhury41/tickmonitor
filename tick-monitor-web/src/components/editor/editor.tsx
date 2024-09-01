@@ -85,7 +85,7 @@ const Element = ({
     case "subtask":
       return (
         <div {...attributes} style={{ marginLeft: "20px" }}>
-          <SubtaskCard title="This is a new Subtask" description="" />
+          {/* <SubtaskCard title="This is a new Subtask" description="" /> */}
         </div>
       );
     case "mention":
@@ -257,10 +257,10 @@ const Editor = () => {
             return (
               <div key={index} className="w-[100%] h-[50px] my-2 flex flex-col">
                 <div className="font-[500]">
-                  {autoFillsMapping[option].title}
+                  {/* {autoFillsMapping[option].title} */}
                 </div>
                 <div className="text-sm text-slate-600">
-                  {autoFillsMapping[option].description}
+                  {/* {autoFillsMapping[option].description} */}
                 </div>
               </div>
             );

@@ -6,9 +6,9 @@ export const GET = async (req: NextRequest) => {
     const response = await axios.get(
       `${process.env.PUBLIC_NEXT_API_URL}/tasks`
     );
-    return { success: true, response: response.data };
+    return NextResponse.json({ success: true, response: response.data });
   } catch (err) {
-    return { success: false, error: err };
+    return NextResponse.json({ success: false, error: err });
   }
 };
 

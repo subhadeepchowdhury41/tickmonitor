@@ -1,11 +1,8 @@
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export const POST = async (req: NextRequest) => {
   try {

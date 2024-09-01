@@ -1,5 +1,5 @@
 import axios from "axios";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (
   req: NextRequest,
@@ -9,8 +9,8 @@ export const GET = async (
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/domains/${params.id}`
     );
-    return { success: true, response: response.data };
+    return NextResponse.json({ success: true, response: response.data });
   } catch (err) {
-    return { success: false, error: err };
+    return NextResponse.json({ success: false, error: err });
   }
 };

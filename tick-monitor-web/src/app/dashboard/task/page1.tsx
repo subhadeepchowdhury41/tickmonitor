@@ -49,7 +49,7 @@ const Tasks = () => {
             >
               <SectionHeading text="My Tasks" />
               <div className="flex flex-wrap m-4 gap-4">
-                {tasks?.myTasks.map((t, index) => {
+                {tasks?.myTasksFiltered.map((t, index) => {
                   return (
                     <div
                       key={index}
@@ -101,7 +101,7 @@ const Tasks = () => {
             >
               <SectionHeading text="Assigned Tasks" />
               <div className="flex flex-wrap mt-4 mx-4 gap-4">
-                {tasks?.tasksByMe.map((t, index) => {
+                {tasks?.tasksByMeFiltered.map((t, index) => {
                   return <AssignedTaskCard t={t} key={index} />;
                 })}
               </div>
