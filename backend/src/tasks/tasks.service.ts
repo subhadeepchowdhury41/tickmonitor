@@ -76,19 +76,6 @@ export class TasksService {
         ],
       });
     }
-    // const assigned = await this.tasksRepository
-    //   .createQueryBuilder('task')
-    //   .leftJoinAndSelect('task.assignedUsers', 'taskUser')
-    //   .leftJoinAndSelect('taskUser.user', 'user')
-    //   .leftJoinAndSelect('task.assignedBy', 'assignedBy')
-    //   .leftJoinAndSelect('task.subTasks', 'subTasks')
-    //   .leftJoinAndSelect('task.dependencies', 'dependencies')
-    //   .leftJoinAndSelect('task.vertices', 'vertices')
-    //   .leftJoinAndSelect('task.attatchments', 'attatchments')
-    //   .where('user.id = :userId', { userId })
-    //   .orWhere('assignedBy.id = :userId', { userId })
-    //   .getMany();
-
     const assigned = await this.taskUserRepository.find({
       where: { user: { id: userId }, task: { level: level } },
       relations: [
@@ -101,16 +88,6 @@ export class TasksService {
         'task.subTasks.vertices',
       ],
     });
-
-    // const assigned = await this.taskUserRepository
-    //   .createQueryBuilder('taskUser')
-    //   .leftJoinAndSelect('taskUser.task', 'task')
-    //   .leftJoinAndSelect('task.subTasks', 'subTask')
-    //   .leftJoinAndSelect('subTask.assignedUsers', 'subTaskAssignedUsers')
-    //   .leftJoinAndSelect('subTask.assignedBy', 'subTaskAssignedBy')
-    //   .where('taskUser.user.id = :userId', { userId })
-    //   .getMany();
-
     const assigns = await this.tasksRepository.find({
       where: { assignedBy: { id: userId }, level: level },
       relations: [

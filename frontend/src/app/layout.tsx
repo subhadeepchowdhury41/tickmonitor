@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "./prosemirror.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import SnackbarProvider from "@/lib/context/SnackbarContext";
 import { UserProvider } from "@/contexts/UserContext";
@@ -21,11 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-      className={
-      inter.className
-      }
-      >
+      <body className={inter.className}>
         <SnackbarProvider>
           <AuthProvider>
             <DomainProvider>

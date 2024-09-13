@@ -75,7 +75,10 @@ export class Task {
   })
   urgency: Urgency;
 
-  @ManyToOne(() => Task, (task) => task.subTasks, { nullable: true })
+  @ManyToOne(() => Task, (task) => task.subTasks, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   parentTask: Task;
 
   @OneToMany(() => Task, (task) => task.parentTask, {

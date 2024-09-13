@@ -585,7 +585,7 @@ const CreateTask = () => {
                   </label>
                 </div>
               </div>
-              <div className="mt-4 mb-[200px]">
+              <div className="mx-4 mt-4 mb-[200px]">
                 <Editor />
               </div>
               <div className="mt-4 m-4">

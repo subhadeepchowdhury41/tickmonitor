@@ -13,7 +13,7 @@ export class Tasklog {
   @PrimaryGeneratedColumn('uuid')
   id?: string;
 
-  @ManyToOne(() => Task, (task) => task.logs)
+  @ManyToOne(() => Task, (task) => task.logs, { onDelete: 'CASCADE' })
   task: Task;
 
   @ManyToOne(() => User, (user) => user.logs)
