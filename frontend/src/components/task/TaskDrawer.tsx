@@ -35,6 +35,7 @@ import { useTasks } from "@/contexts/TasksContext";
 import { Tasklog } from "@/lib/types/task-log.type";
 import { Comment } from "@/lib/types/comment-app.type";
 import Comments from "./Comments";
+import TailwindAdvancedEditor from "../editor/editor";
 
 const TaskDrawer = ({
   t,
@@ -123,7 +124,7 @@ const TaskDrawer = ({
         console.log(err);
       });
   };
-  
+
   useEffect(() => {
     if (!open) return;
     fetchDetails();
@@ -394,8 +395,11 @@ const TaskDrawer = ({
               {/* <div className="text-xs text-end font-bold w-[80px] mr-4 pr-2 border-r border-slate-600 text-slate-600">
             Description
           </div> */}
-              <div className="text-md font-normal overflow-y-auto border-gray-400 text-slate-600 border-l-[1px] px-4 py-1 text-wrap break-words">
-                {task!.description}
+              <div className="text-md font-normal overflow-y-auto text-slate-600 px-4 py-1 text-wrap break-words">
+                <TailwindAdvancedEditor
+                  initialValue={JSON.parse(task!.description)}
+                  onChange={() => {}}
+                />
               </div>
             </div>
           </div>

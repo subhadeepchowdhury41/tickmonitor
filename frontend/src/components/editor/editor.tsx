@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { defaultEditorContent } from "@/lib/content";
@@ -31,10 +32,16 @@ import hljs from "highlight.js";
 
 const extensions = [...defaultExtensions, slashCommand];
 
-const TailwindAdvancedEditor = () => {
-  const [initialContent, setInitialContent] = useState<null | JSONContent>(
-    null
-  );
+const TailwindAdvancedEditor = ({
+  initialValue,
+  onChange,
+  storeKey,
+}: {
+  storeKey?: string;
+  initialValue?: JSONContent;
+  onChange: (editor: EditorInstance) => void;
+}) => {
+  const [initialContent, setInitialContent] = useState<null | JSONContent>();
   const [saveStatus, setSaveStatus] = useState("Saved");
   const [charsCount, setCharsCount] = useState();
 
@@ -70,7 +77,14 @@ const TailwindAdvancedEditor = () => {
   );
 
   useEffect(() => {
-    const content = window.localStorage.getItem("novel-content");
+    if (initialValue)
+      window.localStorage.setItem(
+        "novel-content" + (storeKey || ""),
+        JSON.stringify(initialValue)
+      );
+    const content = window.localStorage.getItem(
+      "novel-content" + (storeKey || "")
+    );
     if (content) setInitialContent(JSON.parse(content));
     else setInitialContent(defaultEditorContent);
   }, []);
@@ -95,9 +109,10 @@ const TailwindAdvancedEditor = () => {
       </div>
       <EditorRoot>
         <EditorContent
+          immediatelyRender={false}
           initialContent={initialContent}
           extensions={extensions}
-          className="relative w-full bg-slate-50 text-sm"
+          className="relative w-full text-sm"
           editorProps={{
             handleDOMEvents: {
               keydown: (_view, event) => handleCommandNavigation(event),
@@ -113,6 +128,7 @@ const TailwindAdvancedEditor = () => {
           }}
           onUpdate={({ editor }) => {
             debouncedUpdates(editor);
+            onChange(editor);
             setSaveStatus("Unsaved");
           }}
           slotAfter={<ImageResizer />}
