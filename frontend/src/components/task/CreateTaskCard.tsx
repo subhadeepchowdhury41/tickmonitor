@@ -47,7 +47,7 @@ const CreateTaskCard = ({
   });
   const [dueDate, setDueDate] = useState("");
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState<JSONContent>();
+  const [description, setDescription] = useState<JSONContent>([]);
   const [selectedVerticals, setSelectedVerticals] = useState<string[]>([]);
   const handleUrgencyClick = (urg: string) => {
     setUrgency(urg);
@@ -76,6 +76,8 @@ const CreateTaskCard = ({
       })
       .then(async (res) => {
         await tasks?.syncTasks();
+        setTitle("");
+        setDescription([]);
         handleClose();
       })
       .catch((err) => err);

@@ -18,7 +18,7 @@ export class AppService {
     private readonly vertexServices: VerticesService,
     private readonly taskService: TasksService,
     @InjectEntityManager() private entityManager: EntityManager,
-  ) {}
+  ) { }
 
   getHello = () => {
     return 'Hello! I am Fine';
@@ -106,14 +106,14 @@ export class AppService {
     const taskPromises = Promise.all([
       this.createSeedTask(
         'This is a new Task',
-        'This Task is to check the API',
+        '[]',
         this.seededUsers[0].id,
         [this.seededUsers[1].id],
         [this.seededVertices[0].id, this.seededVertices[1].id],
       ),
       this.createSeedTask(
         'This is a new Task',
-        'This Task is to check the API',
+        '[]',
         this.seededUsers[0].id,
         [this.seededUsers[1].id],
         [this.seededVertices[2].id, this.seededVertices[1].id],

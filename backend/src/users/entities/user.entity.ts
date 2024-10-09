@@ -43,6 +43,9 @@ export class User {
   @Column({ nullable: true })
   refreshToken: string;
 
+  @Column({ default: true })
+  isIndividual: boolean;
+
   @ManyToMany(() => Task, (task) => task.assignedUsers)
   assignedTasks: TaskUser[];
 

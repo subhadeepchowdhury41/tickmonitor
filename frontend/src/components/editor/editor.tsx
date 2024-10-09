@@ -36,10 +36,12 @@ const TailwindAdvancedEditor = ({
   initialValue,
   onChange,
   storeKey,
+  onSave,
 }: {
   storeKey?: string;
   initialValue?: JSONContent;
   onChange: (editor: EditorInstance) => void;
+  onSave?: (desc: string) => Promise<any>;
 }) => {
   const [initialContent, setInitialContent] = useState<null | JSONContent>();
   const [saveStatus, setSaveStatus] = useState("Saved");
@@ -71,6 +73,7 @@ const TailwindAdvancedEditor = ({
         "markdown",
         editor.storage.markdown.getMarkdown()
       );
+      await onSave?.(JSON.stringify(editor.getJSON()));
       setSaveStatus("Saved");
     },
     500
@@ -158,19 +161,18 @@ const TailwindAdvancedEditor = ({
               ))}
             </EditorCommandList>
           </EditorCommand>
-
           <GenerativeMenuSwitch open={openAI} onOpenChange={setOpenAI}>
-            <Separator orientation="vertical" />
-            <NodeSelector open={openNode} onOpenChange={setOpenNode} />
-            <Separator orientation="vertical" />
+              <Separator orientation="vertical" />
+              <NodeSelector open={openNode} onOpenChange={setOpenNode} />
+              <Separator orientation="vertical" />
 
-            <LinkSelector open={openLink} onOpenChange={setOpenLink} />
-            <Separator orientation="vertical" />
-            <MathSelector />
-            <Separator orientation="vertical" />
-            <TextButtons />
-            <Separator orientation="vertical" />
-            <ColorSelector open={openColor} onOpenChange={setOpenColor} />
+              <LinkSelector open={openLink} onOpenChange={setOpenLink} />
+              <Separator orientation="vertical" />
+              <MathSelector />
+              <Separator orientation="vertical" />
+              <TextButtons />
+              <Separator orientation="vertical" />
+              <ColorSelector open={openColor} onOpenChange={setOpenColor} />
           </GenerativeMenuSwitch>
         </EditorContent>
       </EditorRoot>

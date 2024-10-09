@@ -88,4 +88,4 @@ console.log(process.env.USE_LOCAL === 'true' ? 'LocalDB' : 'HostedDB');
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
