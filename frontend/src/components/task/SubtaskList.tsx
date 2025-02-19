@@ -350,7 +350,7 @@ const SubtaskList = ({ t }: { t: Task }) => {
                 <div className="text-xs bg-slate-200 h-7 flex items-center justify-center px-2 rounded">
                   {new Date(t.startDate).toLocaleDateString("en-US", {
                     year: "numeric",
-                    month: "long",
+                    month: "2-digit",
                     day: "numeric",
                     weekday: "short",
                   })}
@@ -630,7 +630,7 @@ const SubtaskList = ({ t }: { t: Task }) => {
               <div className="w-[140px] font-[500] text-slate-500 text-xs">
                 {new Date(s.dueDate).toLocaleDateString("en-US", {
                   year: "numeric",
-                  month: "long",
+                  month: "short",
                   day: "numeric",
                   weekday: "short",
                 })}
