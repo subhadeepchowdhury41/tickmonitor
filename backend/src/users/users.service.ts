@@ -22,7 +22,7 @@ export class UsersService {
     private readonly roleServices: RolesService,
     @Inject(forwardRef(() => DomainService))
     private readonly domainService: DomainService,
-  ) {}
+  ) { }
 
   findAll = async () => {
     return await this.usersRepository.find({ relations: ['domains'] });
@@ -81,7 +81,7 @@ export class UsersService {
       throw new NotFoundException('Domain not Found');
     }
     queriedUser.domains.push(queriedDomain);
-    this.domainService.addUserToDomain(domainId, userId);
+    // this.domainService.addUserToDomain(domainId, userId);
     return this.usersRepository.save(queriedUser);
   };
 

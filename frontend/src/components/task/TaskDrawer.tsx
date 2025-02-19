@@ -35,6 +35,7 @@ import { useTasks } from "@/contexts/TasksContext";
 import { Tasklog } from "@/lib/types/task-log.type";
 import { Comment } from "@/lib/types/comment-app.type";
 import Comments from "./Comments";
+import TailwindAdvancedEditor from "../editor/editor";
 
 const TaskDrawer = ({
   t,
@@ -123,7 +124,24 @@ const TaskDrawer = ({
         console.log(err);
       });
   };
-  
+
+  const updateDesc = async (desc: string) => {
+    await axios
+      .put(`/api/tasks/${t.id}`, {
+        description: desc,
+      })
+      .then(async (res) => {
+        console.log(res.data);
+        if (res.data.success) {
+          await tasks?.syncTasks();
+          await fetchDetails();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   useEffect(() => {
     if (!open) return;
     fetchDetails();
@@ -216,9 +234,6 @@ const TaskDrawer = ({
                     borderWidth: "1px",
                   }}
                 >
-                  {/* <div className="scale-75">
-              {urgencies.filter((u) => u.value === t.urgency)[0].icon}
-            </div> */}
                   {urgencies.filter((u) => u.value === task!.urgency)[0].label}
                 </div>
               </div>
@@ -391,11 +406,13 @@ const TaskDrawer = ({
         {selectedTab === 0 ? (
           <div className="flex flex-col mx-2">
             <div className="flex text-sm items-center my-2 mx-2">
-              {/* <div className="text-xs text-end font-bold w-[80px] mr-4 pr-2 border-r border-slate-600 text-slate-600">
-            Description
-          </div> */}
-              <div className="text-md font-normal overflow-y-auto border-gray-400 text-slate-600 border-l-[1px] px-4 py-1 text-wrap break-words">
-                {task!.description}
+              <div className="text-md font-normal overflow-y-auto w-full text-slate-600 px-4 py-1 text-wrap break-words">
+                <TailwindAdvancedEditor
+                  storeKey={`-${t.id}`}
+                  initialValue={JSON.parse(task!.description)}
+                  onChange={() => {}}
+                  onSave={updateDesc}
+                />
               </div>
             </div>
           </div>

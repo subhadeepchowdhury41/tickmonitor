@@ -21,6 +21,9 @@ const TaskRow = ({ t }: { t: Task }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [expandSubs, setExpandSubs] = useState(false);
   const [expandSubTasks, setExpandSubTasks] = useState(false);
+  const handleSubTaskCreateClose = () => {
+    setExpandSubs(false);
+  };
   const handleSubAdd = () => {
     setExpandSubs((prev) => !prev);
   };
@@ -38,6 +41,27 @@ const TaskRow = ({ t }: { t: Task }) => {
   const handleClose = () => {
     setShowDetails(false);
   };
+  const getDescriptionText = () => {
+    let desc: any;
+    try {
+      desc = JSON.parse(t.description);
+      console.log("FFFFFF", desc);
+    } catch {
+      return "No description Available.";
+    }
+    if (!desc.content) {
+      return "No description Available.";
+    } else {
+      return desc.content[0].content[0].text || "No descrption Available.";
+    }
+  };
+  const recurseTillText = (obj: any) => {
+    console.log(obj);
+
+    return Object.keys(obj).includes("text")
+      ? `${obj["text"]}`
+      : obj["content"][0];
+  };
   return (
     <div className={`bg-white flex w-full flex-col justify-center px-4 `}>
       <TaskDrawer t={t} open={showDetails} onClose={handleClose} />
@@ -46,7 +70,7 @@ const TaskRow = ({ t }: { t: Task }) => {
         <div className="w-[200px] text-sm">
           <div className="w-[180px] line-clamp-1 text-ellipsis">{t.title}</div>
           <div className="font-light w-[200px] text-slate-600 text-xs text-ellipsis line-clamp-1 ">
-            {t.description}
+            {getDescriptionText()}
           </div>
         </div>
 
@@ -55,7 +79,7 @@ const TaskRow = ({ t }: { t: Task }) => {
           <div className="w-[145px] font-[500] text-slate-500 text-xs">
             {new Date(t.dueDate).toLocaleDateString("en-US", {
               year: "numeric",
-              month: "long",
+              month: "short",
               day: "numeric",
               weekday: "short",
             })}
@@ -161,7 +185,13 @@ const TaskRow = ({ t }: { t: Task }) => {
       </div>
 
       {/* :Subtasks */}
-      {expandSubs && <CreateSubTaskCard t={t} onAdd={handleAdd} />}
+
+      <CreateSubTaskCard
+        t={t}
+        showDialog={expandSubs}
+        handleClose={handleSubTaskCreateClose}
+        onAdd={handleAdd}
+      />
       {expandSubTasks && <SubtaskList t={t} />}
 
       <div className="border-b"></div>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { defaultEditorContent } from "@/lib/content";
@@ -31,10 +32,18 @@ import hljs from "highlight.js";
 
 const extensions = [...defaultExtensions, slashCommand];
 
-const TailwindAdvancedEditor = () => {
-  const [initialContent, setInitialContent] = useState<null | JSONContent>(
-    null
-  );
+const TailwindAdvancedEditor = ({
+  initialValue,
+  onChange,
+  storeKey,
+  onSave,
+}: {
+  storeKey?: string;
+  initialValue?: JSONContent;
+  onChange: (editor: EditorInstance) => void;
+  onSave?: (desc: string) => Promise<any>;
+}) => {
+  const [initialContent, setInitialContent] = useState<null | JSONContent>();
   const [saveStatus, setSaveStatus] = useState("Saved");
   const [charsCount, setCharsCount] = useState();
 
@@ -64,13 +73,21 @@ const TailwindAdvancedEditor = () => {
         "markdown",
         editor.storage.markdown.getMarkdown()
       );
+      await onSave?.(JSON.stringify(editor.getJSON()));
       setSaveStatus("Saved");
     },
     500
   );
 
   useEffect(() => {
-    const content = window.localStorage.getItem("novel-content");
+    if (initialValue)
+      window.localStorage.setItem(
+        "novel-content" + (storeKey || ""),
+        JSON.stringify(initialValue)
+      );
+    const content = window.localStorage.getItem(
+      "novel-content" + (storeKey || "")
+    );
     if (content) setInitialContent(JSON.parse(content));
     else setInitialContent(defaultEditorContent);
   }, []);
@@ -95,9 +112,10 @@ const TailwindAdvancedEditor = () => {
       </div>
       <EditorRoot>
         <EditorContent
+          immediatelyRender={false}
           initialContent={initialContent}
           extensions={extensions}
-          className="relative w-full bg-slate-50 text-sm"
+          className="relative w-full text-sm"
           editorProps={{
             handleDOMEvents: {
               keydown: (_view, event) => handleCommandNavigation(event),
@@ -113,6 +131,7 @@ const TailwindAdvancedEditor = () => {
           }}
           onUpdate={({ editor }) => {
             debouncedUpdates(editor);
+            onChange(editor);
             setSaveStatus("Unsaved");
           }}
           slotAfter={<ImageResizer />}
@@ -142,19 +161,18 @@ const TailwindAdvancedEditor = () => {
               ))}
             </EditorCommandList>
           </EditorCommand>
-
           <GenerativeMenuSwitch open={openAI} onOpenChange={setOpenAI}>
-            <Separator orientation="vertical" />
-            <NodeSelector open={openNode} onOpenChange={setOpenNode} />
-            <Separator orientation="vertical" />
+              <Separator orientation="vertical" />
+              <NodeSelector open={openNode} onOpenChange={setOpenNode} />
+              <Separator orientation="vertical" />
 
-            <LinkSelector open={openLink} onOpenChange={setOpenLink} />
-            <Separator orientation="vertical" />
-            <MathSelector />
-            <Separator orientation="vertical" />
-            <TextButtons />
-            <Separator orientation="vertical" />
-            <ColorSelector open={openColor} onOpenChange={setOpenColor} />
+              <LinkSelector open={openLink} onOpenChange={setOpenLink} />
+              <Separator orientation="vertical" />
+              <MathSelector />
+              <Separator orientation="vertical" />
+              <TextButtons />
+              <Separator orientation="vertical" />
+              <ColorSelector open={openColor} onOpenChange={setOpenColor} />
           </GenerativeMenuSwitch>
         </EditorContent>
       </EditorRoot>

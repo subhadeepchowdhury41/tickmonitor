@@ -132,13 +132,18 @@ const AutofillInput = <T,>({
     }
   };
   const removeItem = (id: string) => {
-    setSelected((prev) => prev.filter((item) => item.id !== id));
+    setSelected((prev) => {
+      let newList = prev.filter((item) => item.id !== id);
+      console.log("ON_REMOVE", newList);
+      return newList;
+    });
   };
   const selectItem = (idx: number) => {
     console.log("SELECTED: ", idx);
     handleSelect(filteredOptions[idx]);
   };
   const handleScroll = (): void => {
+    console.log(containerRef.current?.getBoundingClientRect().top);
     setContainerDimensions(containerRef.current?.getBoundingClientRect());
   };
   useEffect(() => {
@@ -146,12 +151,12 @@ const AutofillInput = <T,>({
     parentRef?.current!.addEventListener("scroll", handleScroll);
     return () =>
       parentRef?.current?.removeEventListener("scroll", handleScroll);
-  }, [containerRef]);
+  }, [containerRef.current]);
 
   return (
     <div
       ref={containerRef}
-      className={`flex flex-col bg-white rounded-md w-full py-1 border border-slate-400 ${className}`}
+      className={`relative flex flex-col bg-white rounded-md w-full py-1 border border-slate-400 ${className}`}
     >
       <label className="text-xs px-2">{label}</label>
       <div className="flex flex-wrap gap-1">
@@ -179,7 +184,9 @@ const AutofillInput = <T,>({
       {focused && filteredOptions.length > 0 && selected.length < maxItems && (
         <div
           style={{
-            top: `${(containerDimensions?.top ?? 0) - 80}px`,
+            // top: `${(containerDimensions?.top ?? 0) - 80}px`,
+            top: `40px`,
+            // width: `${containerDimensions?.width ?? 0 - 48}px`,
             width: `${containerDimensions?.width ?? 0 - 48}px`,
           }}
           className={`absolute animate-dropdown-appear-grow shadow-xl border border-slate-400 rounded-md z-50`}

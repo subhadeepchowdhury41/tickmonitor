@@ -9,6 +9,8 @@ import {
   Download,
   Cancel,
   Send,
+  Delete,
+  MoreVert,
 } from "@mui/icons-material";
 import {
   Dialog,
@@ -17,6 +19,8 @@ import {
   DialogTitle,
   Drawer,
   IconButton,
+  Menu,
+  MenuItem,
   Tooltip,
 } from "@mui/material";
 import UserAvatar from "../user/UserAvatar";
@@ -30,6 +34,7 @@ import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { Comment } from "@/lib/types/comment-app.type";
 import TextInput from "../ui/form/TextInput";
+import TailwindAdvancedEditor from "../editor/editor";
 
 const SubtaskList = ({ t }: { t: Task }) => {
   const tasks = useTasks();
@@ -46,6 +51,7 @@ const SubtaskList = ({ t }: { t: Task }) => {
   const [selectedSub, setSelectedSub] = useState<Task | null>();
   const [files, setFiles] = useState<File[]>([]);
   const [expandPeople, setExpandPeople] = useState(false);
+  const [showMoreEl, setShowMoreEl] = useState<HTMLElement | null>(null);
   const fetchDetails = async () => {
     await axios.get(`/api/tasks/${t.id}`).then((res) => {
       console.log(res.data);
@@ -136,6 +142,47 @@ const SubtaskList = ({ t }: { t: Task }) => {
         setCurrComment("");
       });
   };
+  const updateDesc = async (desc: string) => {
+    await axios
+      .put(`/api/tasks/${selectedSub!.id}`, {
+        description: desc,
+      })
+      .then(async (res) => {
+        console.log(res.data);
+        if (res.data.success) {
+          await tasks?.syncTasks();
+          await fetchDetails();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const getDescriptionText = () => {
+    let desc: any;
+    try {
+      desc = JSON.parse(selectedSub!.description);
+    } catch {
+      return "No description Available.";
+    }
+    if (!desc.content) {
+      return "No description Available.";
+    } else {
+      return desc.content[0].content[0].text || "No description Available";
+    }
+  };
+  const deleteTask = async () => {
+    await axios.delete(`/api/tasks/${selectedSub!.id}`).then((res) => {
+      console.log(res.data);
+      tasks?.syncTasks();
+    });
+  };
+  const handleMorePress = (e: any) => {
+    setShowMoreEl(e as HTMLElement);
+  };
+  const handleMoreClose = () => {
+    setShowMoreEl(null);
+  };
   const ExpandPeople = useCallback(
     () => (
       <div className="flex items-center mx-4 gap-1">
@@ -201,50 +248,55 @@ const SubtaskList = ({ t }: { t: Task }) => {
           </div>
         </DialogActions>
       </Dialog>
+      <Menu
+        open={Boolean(showMoreEl)}
+        anchorEl={showMoreEl}
+        onClose={handleMoreClose}
+      >
+        <MenuItem
+          onClick={deleteTask}
+          className="font-xs flex items-center gap-2"
+        >
+          <Delete color="error" fontSize="small" /> Delete
+        </MenuItem>
+      </Menu>
 
       {/* :Drawer */}
       <Drawer anchor="right" open={showDetails} onClose={handleClose}>
         {selectedSub ? (
           <>
             <div className="h-screen flex flex-col w-[540px]">
-              {/* <SectionHeading
-            text="Task Details"
-            style={{
-              backgroundColor: urgencies.filter((u) => u.value === t.urgency)[0]
-                .color.backgroundColor,
-              color: urgencies.filter((u) => u.value === t.urgency)[0].color
-                .color,
-              margin: "0 0",
-            }}
-            className=" px-2 pt-4"
-            icon={<InfoOutlined fontSize="small" />}
-          /> */}
               <div className="flex mt-4 items-center rounded-lg mx-2">
-                <div className="text-2xl flex flex-wrap gap-2 items-center font-bold px-2 py-2 text-wrap break-words">
-                  {selectedSub?.title}
-                  <div className="flex items-center scale-90">
-                    <div
-                      className="text-xs font-light items-center gap-1 h-6 px-2 flex justify-center rounded-md"
-                      style={{
-                        ...urgencies.filter(
-                          (u) => u.value === selectedSub?.urgency
-                        )[0].color,
-                        borderColor: urgencies.filter(
-                          (u) => u.value === selectedSub?.urgency
-                        )[0].color.color,
-                        borderWidth: "1px",
-                      }}
-                    >
-                      {/* <div className="scale-75">
-                    {urgencies.filter((u) => u.value === t.urgency)[0].icon}
-                  </div> */}
-                      {
-                        urgencies.filter(
-                          (u) => u.value === selectedSub?.urgency
-                        )[0].label
-                      }
+                <div className="flex w-full justify-between items-center">
+                  <div className="text-2xl  flex flex-wrap gap-2 items-center font-bold px-2 py-2 text-wrap break-words">
+                    {selectedSub?.title}
+                    <div className="flex items-center scale-90">
+                      <div
+                        className="text-xs font-light items-center gap-1 h-6 px-2 flex justify-center rounded-md"
+                        style={{
+                          ...urgencies.filter(
+                            (u) => u.value === selectedSub?.urgency
+                          )[0].color,
+                          borderColor: urgencies.filter(
+                            (u) => u.value === selectedSub?.urgency
+                          )[0].color.color,
+                          borderWidth: "1px",
+                        }}
+                      >
+                        {
+                          urgencies.filter(
+                            (u) => u.value === selectedSub?.urgency
+                          )[0].label
+                        }
+                      </div>
                     </div>
                   </div>
+                  <IconButton
+                    size="small"
+                    onClick={(e) => handleMorePress(e.target)}
+                  >
+                    <MoreVert fontSize="small" />
+                  </IconButton>
                 </div>
               </div>
 
@@ -411,11 +463,15 @@ const SubtaskList = ({ t }: { t: Task }) => {
               {selectedTab === 0 ? (
                 <div className="flex flex-col mx-2">
                   <div className="flex text-sm items-center my-2 mx-2">
-                    {/* <div className="text-xs text-end font-bold w-[80px] mr-4 pr-2 border-r border-slate-600 text-slate-600">
-                  Description
-                </div> */}
-                    <div className="text-md font-normal overflow-y-auto border-gray-400 text-slate-600 border-l-[1px] px-4 py-1 text-wrap break-words">
-                      {selectedSub.description}
+                    <div className="text-md font-normal overflow-y-auto w-full border-gray-400 text-slate-600 px-4 py-1 text-wrap break-words">
+                      <TailwindAdvancedEditor
+                        initialValue={JSON.parse(selectedSub.description)}
+                        storeKey={`-${selectedSub.id}`}
+                        onChange={(e) => {
+                          console.log(e.getJSON());
+                        }}
+                        onSave={updateDesc}
+                      />
                     </div>
                   </div>
                 </div>
@@ -565,7 +621,7 @@ const SubtaskList = ({ t }: { t: Task }) => {
                 {s.title}
               </div>
               <div className="font-light w-[200px] text-slate-600 text-xs text-ellipsis line-clamp-1 ">
-                {s.description}
+                {getDescriptionText()}
               </div>
             </div>
 
