@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CreateDomainDto } from './dto/create-domain.dto';
 import { DomainService } from './domain.service';
 
@@ -23,5 +23,15 @@ export class DomainController {
   @Get()
   getAll() {
     return this.domainService.findAll();
+  }
+
+  @Get(':id/export')
+  export(@Param('id') id: string) {
+    return this.domainService.export(id);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.domainService.delete(id);
   }
 }

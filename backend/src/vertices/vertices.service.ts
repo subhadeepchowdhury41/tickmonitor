@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   forwardRef,
   Inject,
   Injectable,
@@ -23,6 +24,12 @@ export class VerticesService {
   };
   create = async (createVertexDto: CreateVertexDto) => {
     try {
+      const existingVertex = await this.verticesRepo.findOne({
+        where: { name: createVertexDto.name },
+      });
+      if (existingVertex) {
+        throw new BadRequestException('Vertex already exists');
+      }
       const createdVertex = this.verticesRepo.create({
         name: createVertexDto.name,
       });
@@ -34,7 +41,7 @@ export class VerticesService {
       return vertex;
     } catch (err) {
       console.error(err);
-      return err;
+      throw err;
     }
   };
   remove = async (id: string) => {

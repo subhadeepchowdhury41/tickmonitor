@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Domain } from './entities/domain.entity';
 import { Repository } from 'typeorm';
@@ -21,11 +21,17 @@ export class DomainService {
   ) {}
   create = async (createDomainDto: CreateDomainDto) => {
     try {
+      const existingDomain = await this.domainRepository.findOne({
+        where: { domainName: createDomainDto.domainName },
+      });
+      if (existingDomain) {
+        throw new BadRequestException('Domain already exists');
+      }
       const domain = this.domainRepository.create(createDomainDto);
       return this.domainRepository.save(domain);
     } catch (err) {
       console.error(err);
-      return err;
+      throw err;
     }
   };
   addVerticesToDomain = async (domainId: string, vertId: string) => {
@@ -39,6 +45,7 @@ export class DomainService {
       return await this.domainRepository.save(queriedDomain);
     } catch (err) {
       console.error(err);
+      throw err;
     }
   };
   addUserToDomain = async (domainId: string, userId: string) => {
@@ -89,4 +96,28 @@ export class DomainService {
       throw err;
     }
   };
+  export = async (id: string) => {
+    try {
+      const domain = await this.findById(id, ['vertices', 'users', 'subDomains', 'roles']);
+      if (!domain) {
+        throw new NotFoundException('No Domain Found with this ID');
+      }
+      return domain;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }
+  delete = async (id: string) => {
+    try {
+      const domain = await this.findById(id);
+      if (!domain) {
+        throw new NotFoundException('No Domain Found with this ID');
+      }
+      return await this.domainRepository.remove(domain);
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }
 }

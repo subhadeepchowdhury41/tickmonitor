@@ -9,6 +9,7 @@ import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { UserAuthDto } from './dto/user-auth.dto';
 import { ConfigService } from '@nestjs/config';
+import { DomainService } from 'src/domain/domain.service';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +17,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly domainService: DomainService,
   ) {}
 
   signin = async (user: UserAuthDto) => {
@@ -43,13 +45,18 @@ export class AuthService {
       if (existingUser) {
         throw new BadRequestException('User Already Exists');
       }
-      const newUser = await this.userService.create(user);
+      if (!user?.domainId) {
+        throw new BadRequestException('Domain ID is Required');
+      }
+      const existingDomain = await this.domainService.findById(user.domainId);
+      if (!existingDomain) {
+        throw new BadRequestException('No Domain Found with this ID');
+      }
+      const newUser = await this.userService.create({...user, domainId: existingDomain.id});
       const tokens = await this.getTokens(newUser.id, newUser.email);
-      return { ...user, ...tokens };
+      return { ...user, ...tokens, domain: existingDomain };
     } catch (err) {
-      return {
-        error: err.response,
-      };
+      throw err;
     }
   };
 

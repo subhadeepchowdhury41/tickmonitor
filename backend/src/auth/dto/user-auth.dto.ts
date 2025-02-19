@@ -11,6 +11,9 @@ export class UserAuthDto {
   })
   password: string;
 
+  @IsNotEmpty()
+  domainId?: string;
+
   sub?: string;
   name?: string;
 }

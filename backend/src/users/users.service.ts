@@ -44,7 +44,9 @@ export class UsersService {
 
   create = async (user: UserAuthDto): Promise<User | undefined> => {
     user.password = await bcrypt.hash(user.password, 10);
-    return this.usersRepository.save(user);
+    const createdUser =  await this.usersRepository.save({...user, domain: {id: user.domainId}});
+    await this.addDomainToUser(createdUser.id, user.domainId);
+    return createdUser;
   };
 
   update = async (id: string, updates: UserUpdateDto): Promise<any> => {
