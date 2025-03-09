@@ -54,7 +54,6 @@ const SubtaskList = ({ t }: { t: Task }) => {
   const [showMoreEl, setShowMoreEl] = useState<HTMLElement | null>(null);
   const fetchDetails = async () => {
     await axios.get(`/api/tasks/${t.id}`).then((res) => {
-      console.log(res.data);
       setSubTasks(res.data.response.subTasks);
     });
   };
@@ -74,7 +73,6 @@ const SubtaskList = ({ t }: { t: Task }) => {
         remarks: "",
       })
       .then(async (res) => {
-        console.log(res.data);
         if (res.data.success) {
           setStatusChangeConfirmation(false);
           await tasks?.syncTasks();
@@ -87,7 +85,6 @@ const SubtaskList = ({ t }: { t: Task }) => {
   };
   const addAttachment = async () => {
     if (!files.length) {
-      console.log(t);
       return;
     }
     const formData = new FormData();
@@ -97,7 +94,6 @@ const SubtaskList = ({ t }: { t: Task }) => {
     formData.append("userId", auth?.user.sub);
     formData.append("taskId", selectedSub!.id);
     const res = await axios.post(`/api/attachments`, formData);
-    console.log(res.data);
     tasks?.syncTasks();
     await fetchSubDetails(selectedSub!.id);
     setFiles([]);
@@ -148,7 +144,6 @@ const SubtaskList = ({ t }: { t: Task }) => {
         description: desc,
       })
       .then(async (res) => {
-        console.log(res.data);
         if (res.data.success) {
           await tasks?.syncTasks();
           await fetchDetails();
@@ -158,10 +153,10 @@ const SubtaskList = ({ t }: { t: Task }) => {
         console.log(err);
       });
   };
-  const getDescriptionText = () => {
+  const getDescriptionText = (content: any) => {
     let desc: any;
     try {
-      desc = JSON.parse(selectedSub!.description);
+      desc = JSON.parse(content);
     } catch {
       return "No description Available.";
     }
@@ -621,13 +616,13 @@ const SubtaskList = ({ t }: { t: Task }) => {
                 {s.title}
               </div>
               <div className="font-light w-[200px] text-slate-600 text-xs text-ellipsis line-clamp-1 ">
-                {getDescriptionText()}
+                {getDescriptionText(s.description)}
               </div>
             </div>
 
             <div className="flex items-center">
               {/* :Col2 */}
-              <div className="w-[140px] font-[500] text-slate-500 text-xs">
+              <div className="w-[145px] font-[500] text-slate-500 text-xs">
                 {new Date(s.dueDate).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "short",

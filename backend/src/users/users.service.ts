@@ -81,7 +81,6 @@ export class UsersService {
       throw new NotFoundException('Domain not Found');
     }
     queriedUser.domains.push(queriedDomain);
-    // this.domainService.addUserToDomain(domainId, userId);
     return this.usersRepository.save(queriedUser);
   };
 
