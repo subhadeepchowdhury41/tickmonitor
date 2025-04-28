@@ -30,7 +30,7 @@ dotenv.config();
 const localDB = {
   host: 'localhost',
   username: 'postgres',
-  password: 'postgres',
+  password: 'subha',
   database: 'tickmonitor-db',
 };
 

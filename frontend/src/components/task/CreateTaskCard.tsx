@@ -173,6 +173,8 @@ const CreateTaskCard = ({
                 }}
               />
             </div>
+
+            {/* Cc */}
             <div className="flex mx-2 mt-2">
               <div className="flex w-16 items-center text-xs text-slate-600">
                 Cc
@@ -240,6 +242,7 @@ const CreateTaskCard = ({
               />
             </div>
 
+            {/* Date */}
             <div className="flex items-center mx-2 mt-4">
               <div className="w-16 flex items-center text-xs text-slate-600">
                 Date
@@ -261,6 +264,8 @@ const CreateTaskCard = ({
                 />
               </div>
             </div>
+
+            {/* Project */}
             <div className="flex items-center mx-2 mt-2">
               <div className="w-16 flex items-center text-xs text-slate-600">
                 Project

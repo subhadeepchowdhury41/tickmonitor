@@ -52,7 +52,7 @@ const TaskRow = ({ t }: { t: Task }) => {
     if (!desc.content) {
       return "No description Available.";
     } else {
-      return desc.content[0].content[0].text || "No descrption Available.";
+      return desc.content?.[0].content?.[0].text || "No descrption Available.";
     }
   };
   const recurseTillText = (obj: any) => {

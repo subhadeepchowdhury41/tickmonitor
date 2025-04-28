@@ -5,7 +5,7 @@ import { AppService } from './app.service';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const appServices = app.get(AppService);
-  await app.listen(3000);
+  await app.listen(4000);
   // await appServices.seedUsers();
   // await appServices.seedDomains();
   // await appServices.seedUserDomain();

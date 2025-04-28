@@ -3,6 +3,7 @@
 import { useState } from "react";
 import DrawerItem from "./items";
 import {
+  Add,
   Analytics,
   Call,
   Chat,
@@ -14,6 +15,8 @@ import {
 } from "@mui/icons-material";
 import TextInput from "../ui/form/TextInput";
 import { useDomain } from "@/contexts/DomainContext";
+import { Button, Dialog, IconButton } from "@mui/material";
+import CreateVertical from "./CreateVertical";
 
 const drawerItems = [
   { id: 0, label: "Dashboard", icon: <Dashboard /> },
@@ -27,6 +30,13 @@ const drawerItems = [
 const Drawer = () => {
   const domain = useDomain();
   const [selectedItem, setSelectedItem] = useState(0);
+  const [showAddVertical, setShowAddVertical] = useState(false);
+  const handleAddVertical = () => {
+    setShowAddVertical(true);
+  };
+  const handleCloseAddVertical = () => {
+    setShowAddVertical(false);
+  };
   return (
     <div className="flex bg-white">
       <div className={`w-[76px] bg-primary ml-2 my-2 rounded`}>
@@ -62,15 +72,29 @@ const Drawer = () => {
 
         {/* :Projects */}
         <div className="flex flex-col mt-2 mb-1 ml-2 mr-4">
-          <div className="text-slate-400 text-[10px] font-semibold">
-            Projects
+          <div className="flex items-center justify-between">
+            <div className="text-slate-400 text-[10px] font-semibold">
+              Projects
+            </div>
+            <div>
+              <IconButton
+                size="small"
+                sx={{
+                  width: "24px",
+                  height: "24px",
+                }}
+                onClick={handleAddVertical}
+              >
+                <Add fontSize="small" className="scale-[0.8]" />
+              </IconButton>
+            </div>
           </div>
           {domain?.verticals.map((v, i) => (
             <div
               key={i}
               className="text-xs hover:bg-slate-100 rounded text-slate-600 h-7 mt-[0.1em] cursor-pointer flex items-center line-clamp-1 text-ellipsis"
             >
-              <CircleRounded className="scale-[0.2]"/>
+              <CircleRounded className="scale-[0.2]" />
               <div className="w-full text-ellipsis line-clamp-1">{v.name}</div>
             </div>
           ))}
@@ -83,12 +107,16 @@ const Drawer = () => {
               key={i}
               className="text-xs hover:bg-slate-100 rounded text-slate-600 h-7 my-[0.1em] cursor-pointer flex items-center text-ellipsis line-clamp-1"
             >
-              <CircleRounded className="scale-[0.2]"/>
+              <CircleRounded className="scale-[0.2]" />
               <div className="w-full text-ellipsis line-clamp-1">{u.name}</div>
             </div>
           ))}
         </div>
       </div>
+      <CreateVertical
+        showAddVertical={showAddVertical}
+        handleCloseAddVertical={handleCloseAddVertical}
+      />
     </div>
   );
 };

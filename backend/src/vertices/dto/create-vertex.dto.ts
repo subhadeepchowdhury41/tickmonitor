@@ -6,4 +6,8 @@ export class CreateVertexDto {
 
   @IsNotEmpty()
   domainId?: string;
+
+  parentVertical?: string;
+
+  people?: string[];
 }

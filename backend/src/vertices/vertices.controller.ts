@@ -1,10 +1,15 @@
-import { Controller, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Param, Delete, Get } from '@nestjs/common';
 import { VerticesService } from './vertices.service';
 import { CreateVertexDto } from './dto/create-vertex.dto';
 
 @Controller('vertices')
 export class VerticesController {
   constructor(private readonly verticesService: VerticesService) {}
+
+  @Get(":id")
+  list(@Param("id") userId: string) {
+    return this.verticesService.listAll(userId);
+  }
 
   @Post()
   create(@Body() createVertexDto: CreateVertexDto) {

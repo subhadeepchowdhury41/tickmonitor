@@ -5,6 +5,7 @@ import { Role } from 'src/roles/entity/roles.entity';
 import { Tasklog } from 'src/tasklog/entities/tasklog.entity';
 import { TaskUser } from 'src/tasks/entity/task-user.entity';
 import { Task } from 'src/tasks/entity/tasks.entity';
+import { Vertex } from 'src/vertices/entities/vertex.entity';
 import {
   Entity,
   Column,
@@ -66,4 +67,7 @@ export class User {
 
   @ManyToMany(() => Domain, (domains) => domains.users)
   domains: Domain[];
+
+  @ManyToMany(() => Vertex, (vertices) => vertices.people)
+  vertices: Vertex[];
 }

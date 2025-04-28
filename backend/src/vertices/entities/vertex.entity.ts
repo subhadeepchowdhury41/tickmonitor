@@ -1,8 +1,11 @@
 import { Domain } from 'src/domain/entities/domain.entity';
 import { Task } from 'src/tasks/entity/tasks.entity';
+import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -27,6 +30,20 @@ export class Vertex {
 
   @ManyToOne(() => Task, (task) => task.vertices)
   task: Task;
+
+  @ManyToMany(() => User, (user) => user.vertices)
+  @JoinTable({
+    name: 'vertex_user',
+    joinColumn: {
+      name: 'vertex_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
+  })
+  people: User[];
 
   @ManyToOne(() => Domain, (domain) => domain.vertices)
   domain: Domain;
